@@ -1,0 +1,75 @@
+{
+  "$comentario": "Configuração do harness. Lida por scripts/harness/*.mjs e pelos hooks em .claude/hooks/. Mudar um teto aqui é um diff visível — é essa a fricção desejada.",
+  "template": true,
+  "ceilings": {
+    "agentsMdLines": 80,
+    "activeFacts": 60,
+    "factLines": 40,
+    "openTasks": 5
+  },
+  "protectedBranches": [
+    "main",
+    "master"
+  ],
+  "forbiddenTerms": [
+    {
+      "sha256": "c1b4202a2582ca421b495aacb45e3c90a4a23ea59a8f299b0dd9b69fd4ac9d4d",
+      "length": 8,
+      "nota": "nome de organização que o dono do template não quer citado"
+    },
+    {
+      "sha256": "3be0bce7c163e33bc02aac8ae644f1829198a8806fca65c9d5de586b560a601b",
+      "length": 6,
+      "nota": "nome de organização que o dono do template não quer citado"
+    }
+  ],
+  "proseRoots": [
+    "README.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "docs",
+    ".claude"
+  ],
+  "env": {
+    "example": ".env.example",
+    "sources": [
+      "src",
+      "scripts/db"
+    ],
+    "declarations": [
+      "src/config/env.ts"
+    ]
+  },
+  "safeRmTargets": [
+    "node_modules",
+    "dist",
+    "coverage",
+    ".harness",
+    "tmp"
+  ],
+  "checks": {
+    "disabled": []
+  },
+  "layer": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "harness.config.json",
+    ".claude/settings.json",
+    ".claude/hooks",
+    ".claude/skills",
+    ".claude/agents",
+    "docs/harness.md",
+    "docs/guardrails.md",
+    "docs/memory/README.md",
+    "docs/decisions/0000-template.md",
+    "docs/evals/README.md",
+    "scripts/harness",
+    "work/.gitkeep"
+  ],
+  "layerExclude": [
+    ".claude/skills/novo-modulo",
+    ".claude/skills/iniciar-projeto",
+    ".claude/skills/pre-push"
+  ],
+  "$layer": "O que scripts/harness/adopt.mjs leva a um repositório existente. layerExclude é o que é só do template/esqueleto; AGENTS.md, a skill pre-push, o índice da memória, o README das decisões e o guardrails.md são gerados ou filtrados pelo adopt."
+}

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+# uso do harness (skills/agentes chamados) — local, alimenta a jardinagem
+.harness/
+# configurações pessoais do Claude Code
+.claude/settings.local.json

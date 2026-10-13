@@ -1,0 +1,44 @@
+# Espelhado passo a passo pela skill pre-push (.claude/skills/pre-push/SKILL.md).
+# Mudou aqui, muda lá no mesmo commit.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+          POSTGRES_DB: app
+        ports: ["5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U app -d app"
+          --health-interval 2s --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL: postgres://app:app@localhost:5433/app
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # memory verify compara datas de commit dos arquivos citados
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      # o Vitest não compila como o build: teste verde não prova build verde
+      - run: pnpm build
+      - run: pnpm test
+      - run: pnpm harness:check
+      - run: pnpm harness:test
+      - run: pnpm db:migrate
+      - run: pnpm test:e2e
