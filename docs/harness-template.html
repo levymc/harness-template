@@ -1,0 +1,551 @@
+<title>Harness Template</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: faixa "ink" com o resumo no topo; abaixo, navegação lateral fixa + seções em cartões sóbrios. */
+:root {
+  --bg: #FAFAFA;
+  --surface: #FFFFFF;
+  --surface-2: #F5F5F5;
+  --border: #E9EAEB;
+  --border-strong: #D5D7DA;
+  --text: #181D27;
+  --text-2: #535862;
+  --text-3: #717680;
+  --brand: #D94C93;
+  --brand-strong: #C43F84;
+  --brand-text: #A83771;
+  --brand-subtle: #FFF4F9;
+  --brand-line: #FFD0E4;
+  --ink: #16233D;
+  --ink-2: #454F64;
+  --on-ink: #FFFFFF;
+  --on-ink-2: #CECFD2;
+  --ok: #079455;
+  --ok-bg: #F6FEF9;
+  --warn: #B54708;
+  --warn-bg: #FEEEE2;
+  --info: #155EEF;
+  --info-bg: #F5F8FF;
+  --code-bg: #F5F5F5;
+  --shadow: 0 1px 2px rgba(10, 13, 18, 0.05);
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --surface: #0D0E11; --surface-2: #13161B; --border: #22262F; --border-strong: #373A41;
+    --text: #F7F7F7; --text-2: #CECFD2; --text-3: #94979C;
+    --brand: #D94C93; --brand-strong: #E46AA8; --brand-text: #F28BBF; --brand-subtle: #2A0B1D; --brand-line: #4D1033;
+    --ink: #16233D; --ink-2: #454F64; --on-ink: #FFFFFF; --on-ink-2: #CECFD2;
+    --ok: #47CD89; --ok-bg: #053321; --warn: #FDB022; --warn-bg: #4E1D09; --info: #84ADFF; --info-bg: #00224D;
+    --code-bg: #13161B; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000; --surface: #0D0E11; --surface-2: #13161B; --border: #22262F; --border-strong: #373A41;
+  --text: #F7F7F7; --text-2: #CECFD2; --text-3: #94979C;
+  --brand: #D94C93; --brand-strong: #E46AA8; --brand-text: #F28BBF; --brand-subtle: #2A0B1D; --brand-line: #4D1033;
+  --ink: #16233D; --ink-2: #454F64; --on-ink: #FFFFFF; --on-ink-2: #CECFD2;
+  --ok: #47CD89; --ok-bg: #053321; --warn: #FDB022; --warn-bg: #4E1D09; --info: #84ADFF; --info-bg: #00224D;
+  --code-bg: #13161B; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+code, .mono { font-family: var(--font-mono); font-size: 0.86em; }
+:not(pre) > code {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 1px 5px;
+  overflow-wrap: anywhere;
+}
+a { color: var(--brand-text); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: var(--r-sm); }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+
+/* ── faixa ink ─────────────────────────────────────────── */
+.band { background: var(--ink); color: var(--on-ink); padding-inline: 16px; }
+.band-inner { max-width: 1120px; margin: 0 auto; padding-block: 20px 36px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; }
+.brand-mark {
+  width: 28px; height: 28px; border-radius: var(--r-md); background: var(--brand);
+  display: grid; place-items: center;
+}
+.brand-mark svg { width: 16px; height: 16px; }
+.repo { font-family: var(--font-mono); font-size: 12px; color: var(--on-ink-2); }
+.hero { margin-top: 36px; display: grid; gap: 14px; max-width: 760px; }
+.eyebrow { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand-line); }
+.hero h1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.12; font-weight: 700; letter-spacing: -0.02em; }
+.hero h1 em { font-style: normal; color: var(--brand); }
+.hero p { margin: 0; color: var(--on-ink-2); font-size: 16px; max-width: 64ch; }
+.stats { margin-top: 28px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--ink-2); border: 1px solid var(--ink-2); border-radius: var(--r-lg); overflow: hidden; }
+.stat { background: var(--ink); padding: 14px 16px; display: grid; gap: 2px; }
+.stat b { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 12px; color: var(--on-ink-2); }
+
+/* ── corpo ─────────────────────────────────────────────── */
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; padding-block: 32px 64px; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 40px; }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; display: grid; gap: 2px; }
+nav.toc .label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); padding: 0 10px 8px; }
+nav.toc a { color: var(--text-2); padding: 6px 10px; border-radius: var(--r-sm); font-weight: 500; font-size: 13px; }
+nav.toc a:hover { background: var(--surface-2); text-decoration: none; color: var(--text); }
+nav.toc a.active { background: var(--brand-subtle); color: var(--brand-text); }
+main { display: grid; gap: 48px; min-width: 0; }
+section { display: grid; gap: 16px; scroll-margin-top: 24px; min-width: 0; }
+.sec-head { display: grid; gap: 4px; }
+.sec-head h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+.sec-head p { margin: 0; color: var(--text-2); max-width: 70ch; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow); }
+.card-pad { padding: 16px 18px; }
+
+/* ciclo da sessão */
+.cycle { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.step { padding: 16px; display: grid; gap: 8px; align-content: start; position: relative; }
+.step .when { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand-text); }
+.step h3 { font-size: 15px; font-weight: 600; }
+.step p { margin: 0; color: var(--text-2); font-size: 13px; }
+.step .hook { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-3); border-top: 1px dashed var(--border-strong); padding-top: 8px; margin-top: auto; }
+
+/* memória */
+.mem-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.mem { padding: 16px; display: grid; gap: 6px; align-content: start; }
+.mem-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.mem h3 { font-size: 15px; font-weight: 600; }
+.mem p { margin: 0; color: var(--text-2); font-size: 13px; }
+.mem .where { font-family: var(--font-mono); font-size: 12px; color: var(--text); }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 999px; border: 1px solid transparent; white-space: nowrap; }
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pill.ok { color: var(--ok); background: var(--ok-bg); }
+.pill.warn { color: var(--warn); background: var(--warn-bg); }
+.pill.info { color: var(--info); background: var(--info-bg); }
+.pill.brand { color: var(--brand-text); background: var(--brand-subtle); border-color: var(--brand-line); }
+
+.split { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 12px; }
+pre {
+  margin: 0; background: var(--code-bg); border: 1px solid var(--border); border-radius: var(--r-md);
+  padding: 14px 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; color: var(--text);
+}
+pre .k { color: var(--brand-text); }
+pre .c { color: var(--text-3); }
+.mechs { display: grid; gap: 12px; padding: 16px 18px; }
+.mech { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; }
+.mech .dot { width: 22px; height: 22px; border-radius: var(--r-sm); background: var(--brand-subtle); color: var(--brand-text); display: grid; place-items: center; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.mech b { font-weight: 600; }
+.mech p { margin: 2px 0 0; color: var(--text-2); font-size: 13px; }
+
+/* escada */
+.ladder { display: grid; gap: 0; }
+.rung { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; padding: 14px 18px; border-top: 1px solid var(--border); align-items: start; }
+.rung:first-child { border-top: 0; }
+.rung .lvl { font-size: 12px; font-weight: 600; color: var(--brand-text); }
+.rung .lvl small { display: block; color: var(--text-3); font-weight: 500; }
+.rung h3 { font-size: 14px; font-weight: 600; }
+.rung p { margin: 2px 0 0; color: var(--text-2); font-size: 13px; }
+.callout { display: grid; grid-template-columns: 4px minmax(0, 1fr); gap: 14px; padding: 14px 18px 14px 0; }
+.callout::before { content: ""; background: var(--brand); border-radius: 0 4px 4px 0; }
+.callout p { margin: 0; color: var(--text-2); }
+.callout b { color: var(--text); }
+
+/* tabela de regras */
+.toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.search { position: relative; flex: 1 1 240px; max-width: 360px; }
+.search input {
+  width: 100%; font: inherit; font-size: 13px; color: var(--text); background: var(--surface);
+  border: 1px solid var(--border-strong); border-radius: var(--r-md); padding: 7px 10px 7px 32px;
+}
+.search input:focus { outline: 2px solid var(--brand-line); border-color: var(--brand); }
+.search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--text-3); }
+.count { font-size: 12px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-size: 12px; font-weight: 500; color: var(--text-3); background: var(--surface-2); padding: 9px 14px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+tr:last-child td { border-bottom: 0; }
+td.id { font-family: var(--font-mono); font-size: 12px; color: var(--text); white-space: nowrap; }
+.empty { padding: 20px 14px; color: var(--text-3); text-align: center; }
+
+/* skills e agentes */
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.tile { padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
+.tile .name { font-family: var(--font-mono); font-size: 12.5px; font-weight: 500; color: var(--text); }
+.tile p { margin: 0; color: var(--text-2); font-size: 13px; }
+.subhead { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 4px; }
+
+/* comandos */
+.cmds { display: grid; gap: 8px; }
+.cmd { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 10px 10px 10px 14px; }
+.cmd code { background: none; border: 0; padding: 0; font-size: 13px; color: var(--text); overflow-wrap: anywhere; }
+.cmd small { display: block; color: var(--text-3); font-size: 12px; margin-top: 2px; font-family: var(--font-sans); }
+.btn {
+  font: inherit; font-size: 12px; font-weight: 500; color: var(--text-2); background: var(--surface);
+  border: 1px solid var(--border-strong); border-radius: var(--r-md); padding: 5px 10px; cursor: pointer;
+}
+.btn:hover { background: var(--surface-2); color: var(--text); }
+.btn.done { color: var(--ok); border-color: var(--ok); }
+
+/* verificação */
+.verify { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.vlist { list-style: none; margin: 0; padding: 6px 0; }
+.vlist li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; padding: 8px 18px; font-size: 13px; color: var(--text-2); }
+.vlist li b { color: var(--text); font-weight: 500; }
+.vlist svg { width: 16px; height: 16px; margin-top: 2px; }
+.vhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 18px 4px; }
+.vhead h3 { font-size: 15px; font-weight: 600; }
+
+footer { border-top: 1px solid var(--border); padding-block: 20px; padding-inline: 16px; color: var(--text-3); font-size: 12px; }
+footer div { max-width: 1120px; margin: 0 auto; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+@media (max-width: 960px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); }
+  nav.toc { position: static; display: flex; flex-wrap: wrap; gap: 4px; }
+  nav.toc .label { width: 100%; padding-bottom: 2px; }
+  .cycle { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .split, .verify { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cycle, .mem-grid, .tiles { grid-template-columns: minmax(0, 1fr); }
+  .rung { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+</style>
+
+<header class="band">
+  <div class="band-inner">
+    <div class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3 3h2v10H3zM11 3h2v10h-2zM5 7h6v2H5z" fill="#FFFFFF"/></svg>
+        </span>
+        harness-template
+      </div>
+      <span class="repo">github.com/levymc/harness-template · privado</span>
+    </div>
+    <div class="hero">
+      <span class="eyebrow">Template de harness para agentes de IA</span>
+      <h1>O repositório que <em>não mente</em> sobre si mesmo</h1>
+      <p>Ritual de sessão, memória com citações verificáveis, proibições com sensor e lições que viram checagem. Parte de um projeto novo ou entra num projeto antigo sem sobrescrever nada.</p>
+    </div>
+    <div class="stats" role="list">
+      <div class="stat" role="listitem"><b>17</b><span>regras no check-claims</span></div>
+      <div class="stat" role="listitem"><b>87</b><span>testes do próprio harness</span></div>
+      <div class="stat" role="listitem"><b>5</b><span>hooks do Claude Code</span></div>
+      <div class="stat" role="listitem"><b>9 + 3</b><span>skills e subagentes</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Seções">
+    <span class="label">Nesta página</span>
+    <a href="#ciclo">Ciclo da sessão</a>
+    <a href="#memoria">Memória</a>
+    <a href="#escada">Lição vira guarda</a>
+    <a href="#regras">Regras</a>
+    <a href="#hooks">Hooks</a>
+    <a href="#skills">Skills e agentes</a>
+    <a href="#comecar">Começar</a>
+    <a href="#verificacao">Verificação</a>
+  </nav>
+
+  <main>
+    <section id="ciclo">
+      <div class="sec-head">
+        <h2>Ciclo da sessão</h2>
+        <p>O que acontece em toda sessão do agente, imposto por hook e não por prosa. O agente não precisa lembrar de nada disso.</p>
+      </div>
+      <div class="cycle">
+        <div class="card step">
+          <span class="when">Início</span>
+          <h3>Estado na tela</h3>
+          <p>Branch, últimos commits, tarefas abertas em <code>work/</code>, fatos de memória suspeitos e o índice da memória já entram no contexto.</p>
+          <span class="hook">SessionStart · session-start.mjs</span>
+        </div>
+        <div class="card step">
+          <span class="when">Durante</span>
+          <h3>Ação perigosa barrada</h3>
+          <p>Commit na <code>main</code>, <code>--force</code>, <code>--no-verify</code>, <code>reset --hard</code>, segredo e termo proibido são bloqueados com o motivo e o que fazer.</p>
+          <span class="hook">PreToolUse · bash-guard / file-guard</span>
+        </div>
+        <div class="card step">
+          <span class="when">Ao errar</span>
+          <h3>Lição vira guarda</h3>
+          <p>Falha corrigida sobe a escada: teste, regra, skill, fato. A guarda nova só entra depois de ser vista falhar.</p>
+          <span class="hook">skill licao · prove.mjs</span>
+        </div>
+        <div class="card step">
+          <span class="when">Fim</span>
+          <h3>Não encerra vermelho</h3>
+          <p>check-claims, lint da memória e typecheck rodam antes de o agente dizer "pronto". Silencioso no sucesso, só os erros na falha.</p>
+          <span class="hook">Stop · stop-check.mjs</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="memoria">
+      <div class="sec-head">
+        <h2>Memória</h2>
+        <p>Quatro tipos, cada um com lugar e prazo de validade próprios. Misturar os tipos foi o defeito principal dos harnesses que serviram de base: um arquivo de decisões chegou a 565 KB e uma pasta de tarefas a 634 subpastas.</p>
+      </div>
+      <div class="mem-grid">
+        <div class="card mem">
+          <div class="mem-top"><h3>Fatos</h3><span class="pill brand">semântica</span></div>
+          <span class="where">docs/memory/&lt;slug&gt;.md</span>
+          <p>Um fato não óbvio por arquivo, com citações ao código. Nunca apagado em silêncio: vira <code>superseded</code> e aponta o que o substituiu.</p>
+        </div>
+        <div class="card mem">
+          <div class="mem-top"><h3>Decisões</h3><span class="pill info">ADR</span></div>
+          <span class="where">docs/decisions/NNNN-slug.md</span>
+          <p>Com alternativas e condição de revisão. As recusadas também ficam, para ninguém propor a mesma ideia toda semana.</p>
+        </div>
+        <div class="card mem">
+          <div class="mem-top"><h3>Trabalho em andamento</h3><span class="pill warn">episódica</span></div>
+          <span class="where">work/&lt;data&gt;-&lt;slug&gt;/task.json</span>
+          <p>Objetivo, critérios de aceite e diário append-only. Ao fechar, o aprendizado é destilado e a pasta é apagada: o git guarda o histórico.</p>
+        </div>
+        <div class="card mem">
+          <div class="mem-top"><h3>Procedimentos</h3><span class="pill ok">procedural</span></div>
+          <span class="where">skills · hooks · checks</span>
+          <p>Para onde as lições devem migrar. Um fato que ganhou checagem vira <code>superseded</code> e aponta a guarda.</p>
+        </div>
+      </div>
+
+      <div class="split">
+        <pre aria-label="Anatomia de um fato"><span class="c"># docs/memory/vitest-nao-compila-como-o-build.md</span>
+<span class="k">name:</span> vitest-nao-compila-como-o-build
+<span class="k">description:</span> O Vitest transpila com oxc e ignora
+  erros de tipo — e2e verde não prova o build
+<span class="k">type:</span> gotcha
+<span class="k">status:</span> active
+<span class="k">verified:</span> 2026-10-13
+<span class="k">citations:</span>
+  - <span class="k">path:</span> tsconfig.json
+    <span class="k">anchor:</span> '"useDefineForClassFields": false'
+
+**Por quê:** o e2e passou e o nest build quebrou.
+**Como aplicar:** teste verde não substitui typecheck.</pre>
+        <div class="card mechs">
+          <div class="mech"><span class="dot">1</span><div><b>Citação viva</b><p>O lint reprova o fato cujo arquivo citado sumiu ou cujo trecho <code>anchor</code> não aparece mais.</p></div></div>
+          <div class="mech"><span class="dot">2</span><div><b>Suspeito por mudança de código</b><p>Arquivo citado com commit depois de <code>verified</code> deixa o fato suspeito, e o SessionStart avisa.</p></div></div>
+          <div class="mech"><span class="dot">3</span><div><b>Índice gerado, com teto</b><p><code>MEMORY.md</code> é gerado por script; no máximo 60 fatos ativos de até 40 linhas cada.</p></div></div>
+          <div class="mech"><span class="dot">4</span><div><b>Uma memória só</b><p>A auto-memória local do Claude fica desligada. Tudo é versionado e revisado em PR.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="escada">
+      <div class="sec-head">
+        <h2>Lição vira guarda</h2>
+        <p>Prosa não falha, então decai. Código falha, então permanece. Ao corrigir algo que pode voltar, use o degrau mais alto que funciona.</p>
+      </div>
+      <div class="card ladder">
+        <div class="rung"><span class="lvl">Degrau 1<small>comportamento</small></span><div><h3>Teste na suíte</h3><p>Unit ou e2e. Exemplo: a paridade model ↔ schema falha se um model citar coluna que nenhuma migration cria.</p></div></div>
+        <div class="rung"><span class="lvl">Degrau 2<small>forma e ação</small></span><div><h3>Regra do check-claims ou hook</h3><p>A mensagem de erro diz como consertar; é ela que o agente lê.</p></div></div>
+        <div class="rung"><span class="lvl">Degrau 3<small>procedimento</small></span><div><h3>Linha numa skill</h3><p>Quando nenhum código consegue verificar.</p></div></div>
+        <div class="rung"><span class="lvl">Degrau 4<small>conhecimento</small></span><div><h3>Fato de memória</h3><p>O último recurso, com citação e motivo.</p></div></div>
+      </div>
+      <div class="card callout">
+        <p><b>Prove que pega.</b> <code>prove.mjs</code> aplica a regressão, roda a verificação e reverte sempre. Os testes deste harness passaram todos de primeira; a mutação mostrou dois que passavam pelo motivo errado e um falso positivo no próprio check.</p>
+      </div>
+    </section>
+
+    <section id="regras">
+      <div class="sec-head">
+        <h2>Regras do check-claims</h2>
+        <p>Cada proibição em <code>docs/guardrails.md</code> aponta para uma destas regras, um hook ou um teste. Toda regra tem teste nos dois sentidos: o que tem de pegar e o que não pode pegar.</p>
+      </div>
+      <div class="card">
+        <div class="toolbar">
+          <label class="search" for="filtro">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <input id="filtro" type="search" placeholder="Filtrar regras" autocomplete="off" aria-label="Filtrar regras">
+          </label>
+          <span class="count" id="contagem">17 de 17</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Regra</th><th>O que confere</th></tr></thead>
+            <tbody id="regras-corpo"></tbody>
+          </table>
+          <div class="empty" id="vazio" hidden>Nenhuma regra com esse termo.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="hooks">
+      <div class="sec-head">
+        <h2>Hooks</h2>
+        <p>Node puro, sem dependência, e fail-open: um erro interno avisa e deixa passar, porque guarda que trava tudo quando quebra é desligada no primeiro dia.</p>
+      </div>
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th>Evento</th><th>Script</th><th>Faz</th></tr></thead>
+          <tbody>
+            <tr><td class="id">SessionStart</td><td class="id">session-start.mjs</td><td>Imprime branch, commits, tarefas abertas, fatos suspeitos e o índice da memória.</td></tr>
+            <tr><td class="id">PreToolUse · Bash</td><td class="id">bash-guard.mjs</td><td>Bloqueia ação destrutiva, segredo, migração remota e termo proibido. Texto entre aspas e heredoc não contam como comando.</td></tr>
+            <tr><td class="id">PreToolUse · Read Edit Write</td><td class="id">file-guard.mjs</td><td>Segredo não entra no contexto; termo proibido não entra no repositório.</td></tr>
+            <tr><td class="id">Stop</td><td class="id">stop-check.mjs</td><td>check-claims e typecheck; exit 2 com só os erros. Não prende o agente em laço.</td></tr>
+            <tr><td class="id">PostToolUse · Skill<br>SubagentStop</td><td class="id">usage-log.mjs</td><td>Registra uso em <code>.harness/usage.jsonl</code>, a base para aposentar o que ninguém usa.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="sec-head">
+        <h2>Skills e agentes</h2>
+        <p>Poucas, com gatilho claro e uma única fonte em <code>.claude/skills</code>. Cópias por ferramenta são reprovadas pelo check.</p>
+      </div>
+      <div class="tiles">
+        <div class="card tile"><span class="name">memoria</span><p>Ler, verificar, salvar e consolidar fatos; o filtro do que não salvar.</p></div>
+        <div class="card tile"><span class="name">iniciar-tarefa</span><p>Abre <code>work/</code> com objetivo e critérios que começam falsos.</p></div>
+        <div class="card tile"><span class="name">fechar-tarefa</span><p>Destila em guarda, ADR ou fato, e apaga a pasta.</p></div>
+        <div class="card tile"><span class="name">licao</span><p>Falha vira guarda pela escada, provada com <code>prove.mjs</code>.</p></div>
+        <div class="card tile"><span class="name">pre-push</span><p>Espelho do CI, passo a passo, antes de qualquer push.</p></div>
+        <div class="card tile"><span class="name">adotar-harness</span><p>Leva o harness a um projeto existente, com arqueologia e entrevista.</p></div>
+        <div class="card tile"><span class="name">iniciar-projeto</span><p>Transforma uma cópia do template num projeto novo.</p></div>
+        <div class="card tile"><span class="name">novo-modulo</span><p>Módulo NestJS + Sequelize no padrão do exemplo vivo.</p></div>
+        <div class="card tile"><span class="name">jardinagem</span><p>Revisão periódica: suspeitos, tetos, uso, guardas expiradas.</p></div>
+      </div>
+      <span class="subhead">Subagentes, todos com ferramentas restritas</span>
+      <div class="tiles">
+        <div class="card tile"><span class="name">explorador</span><p>Busca só-leitura; devolve conclusões com arquivo:linha.</p></div>
+        <div class="card tile"><span class="name">verificador</span><p>Roda as verificações e lista o que passou, o que falhou e o que não rodou.</p></div>
+        <div class="card tile"><span class="name">jardineiro</span><p>Executa a jardinagem e só propõe; não apaga nada sozinho.</p></div>
+      </div>
+    </section>
+
+    <section id="comecar">
+      <div class="sec-head">
+        <h2>Começar</h2>
+        <p>Projeto novo a partir do template, ou o harness num projeto que já existe.</p>
+      </div>
+      <div class="cmds">
+        <div class="card cmd"><div><code>pnpm install &amp;&amp; cp .env.example .env</code><small>dependências e configuração local</small></div><button class="btn" type="button" data-copy="pnpm install && cp .env.example .env">Copiar</button></div>
+        <div class="card cmd"><div><code>pnpm db:up &amp;&amp; pnpm db:migrate</code><small>Postgres do docker compose e schema pelas migrations</small></div><button class="btn" type="button" data-copy="pnpm db:up && pnpm db:migrate">Copiar</button></div>
+        <div class="card cmd"><div><code>pnpm check &amp;&amp; pnpm test:e2e</code><small>tudo o que o CI roda</small></div><button class="btn" type="button" data-copy="pnpm check && pnpm test:e2e">Copiar</button></div>
+        <div class="card cmd"><div><code>node scripts/harness/adopt.mjs &lt;caminho&gt; --dry-run</code><small>projeto existente: mostra o que seria instalado; conflitos viram .harness-proposto</small></div><button class="btn" type="button" data-copy="node scripts/harness/adopt.mjs <caminho> --dry-run">Copiar</button></div>
+      </div>
+    </section>
+
+    <section id="verificacao">
+      <div class="sec-head">
+        <h2>Verificação</h2>
+        <p>O que não foi verificado aparece com o mesmo destaque do que passou.</p>
+      </div>
+      <div class="verify">
+        <div class="card">
+          <div class="vhead"><h3>Verificado</h3><span class="pill ok">verde</span></div>
+          <ul class="vlist">
+            <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>CI no GitHub</b> de ponta a ponta: lint, typecheck, build, unit, harness, migrate e e2e.</span></li>
+            <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Hooks no Claude Code real:</b> o contexto do SessionStart chega ao modelo e o <code>reset --hard</code> é bloqueado.</span></li>
+            <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Cada regra e hook</b> vistos falhar por mutação, e a suíte de 87 testes verde.</span></li>
+            <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Adoção num projeto real:</b> nada sobrescrito, e o check copiado achou problemas reais na memória dele.</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="vhead"><h3>Não verificado</h3><span class="pill warn">em aberto</span></div>
+          <ul class="vlist">
+            <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.5" stroke="var(--warn)" stroke-width="1.6"/><path d="M8 5.5v3" stroke="var(--warn)" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="10.8" r="0.9" fill="var(--warn)"/></svg><span><b>Stop, PostToolUse e SubagentStop</b> testados como processo, não numa sessão real.</span></li>
+            <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.5" stroke="var(--warn)" stroke-width="1.6"/><path d="M8 5.5v3" stroke="var(--warn)" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="10.8" r="0.9" fill="var(--warn)"/></svg><span><b>Linux e macOS:</b> os hooks só rodaram no Windows.</span></li>
+            <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.5" stroke="var(--warn)" stroke-width="1.6"/><path d="M8 5.5v3" stroke="var(--warn)" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="10.8" r="0.9" fill="var(--warn)"/></svg><span><b>Campo do nome da skill</b> no evento não está documentado; o log guarda a entrada inteira.</span></li>
+            <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.5" stroke="var(--warn)" stroke-width="1.6"/><path d="M8 5.5v3" stroke="var(--warn)" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="10.8" r="0.9" fill="var(--warn)"/></svg><span><b>Evals:</b> só o formato existe; dependem de falhas reais do projeto.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer><div><span>harness-template · NestJS 12 + Sequelize 6 como esqueleto</span><span>docs/harness.md tem o porquê de cada peça</span></div></footer>
+
+<script>
+(() => {
+  const regras = [
+    ['cited-path', 'Caminho citado na prosa do harness existe, ou é gerado e ignorado pelo git.'],
+    ['pnpm-script', 'pnpm <script> citado existe no package.json (ou é binário de dependência).'],
+    ['script-flag', 'Flag citado para um script existe no script.'],
+    ['agents-md-ceiling', 'AGENTS.md dentro do teto de linhas.'],
+    ['pending-markers', 'Nenhum marcador "pendente" sobrou na prosa do harness.'],
+    ['forbidden-terms', 'Nenhum termo proibido, guardado por hash, em arquivo do repositório.'],
+    ['skill-frontmatter', 'Toda skill tem frontmatter com name igual à pasta e description.'],
+    ['agent-frontmatter', 'Todo subagente tem name, description e tools explícito.'],
+    ['single-skill-source', 'Skills só em .claude/skills, sem cópia por ferramenta.'],
+    ['settings-hygiene', 'settings.json sem caminho absoluto, auto-memória desligada, hooks que existem.'],
+    ['guardrails-sensors', 'Toda proibição em guardrails.md aponta um sensor que existe.'],
+    ['adr-shape', 'ADRs com número único, status válido e condição de revisão.'],
+    ['md-links', 'Links relativos em Markdown resolvem.'],
+    ['no-sync', 'sequelize.sync() nunca fora de teste; schema só muda por migration.'],
+    ['env-example', 'Toda variável de ambiente lida pelo código está no .env.example.'],
+    ['memory', 'Memória: forma, citações vivas, índice em sincronia e tetos.'],
+    ['work-tasks', 'Tarefas abertas dentro do teto, cada uma com task.json válido.'],
+  ];
+  const corpo = document.getElementById('regras-corpo');
+  const contagem = document.getElementById('contagem');
+  const vazio = document.getElementById('vazio');
+  const filtro = document.getElementById('filtro');
+  const linhas = regras.map(([id, texto]) => {
+    const tr = document.createElement('tr');
+    const a = document.createElement('td'); a.className = 'id'; a.textContent = id;
+    const b = document.createElement('td'); b.textContent = texto;
+    tr.append(a, b); corpo.append(tr);
+    return { tr, chave: (id + ' ' + texto).toLowerCase() };
+  });
+  const aplicar = () => {
+    const q = filtro.value.trim().toLowerCase();
+    let n = 0;
+    for (const l of linhas) { const ok = !q || l.chave.includes(q); l.tr.hidden = !ok; if (ok) n++; }
+    contagem.textContent = n + ' de ' + regras.length;
+    vazio.hidden = n !== 0;
+  };
+  filtro.addEventListener('input', aplicar);
+
+  document.querySelectorAll('[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const texto = btn.getAttribute('data-copy');
+      const marcar = () => { btn.textContent = 'Copiado'; btn.classList.add('done'); setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('done'); }, 1600); };
+      const selecionar = () => {
+        const code = btn.parentElement.querySelector('code');
+        const r = document.createRange(); r.selectNodeContents(code);
+        const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        btn.textContent = 'Selecionado';
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(texto).then(marcar, selecionar);
+      else selecionar();
+    });
+  });
+
+  const links = [...document.querySelectorAll('nav.toc a')];
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entradas) => {
+      entradas.forEach((e) => {
+        if (!e.isIntersecting) return;
+        links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('main section').forEach((s) => io.observe(s));
+  }
+})();
+</script>
