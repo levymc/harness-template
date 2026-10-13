@@ -24,7 +24,7 @@ transferem direto.
 ## Consequências
 
 - Models com `type` explícito em toda coluna, e `useDefineForClassFields: false` no
-  tsconfig (ver `docs/memory/vitest-nao-compila-como-o-build.md`).
+  tsconfig (ver `docs/memory/esqueleto/testes/vitest-nao-compila-como-o-build.md`).
 - Sem gerador de migration: a migration é escrita à mão, e o teste de paridade cobre o
   esquecimento.
 

@@ -21,7 +21,7 @@ O exemplo vivo é `src/items/`. Copie a forma dele; não invente outra.
 6. **Module** com `SequelizeModule.forFeature([Entidade])`, registrado em
    `src/app.module.ts`.
 7. **Imports relativos com `.js`** (projeto ESM — ver
-   `docs/memory/nest12-esm-vitest.md`).
+   `docs/memory/esqueleto/nest12-esm-vitest.md`).
 8. **Testes**: unit do service com o model mockado via `getModelToken`; e2e que **lê de
    volta pelo GET** (não confie no eco do POST). A paridade model ↔ schema
    (`test/schema-parity.e2e-spec.ts`) já cobre o módulo novo sozinha.

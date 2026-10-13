@@ -18,3 +18,4 @@ do check-claims confere). Copie [`0000-template.md`](0000-template.md).
 | [0001](0001-harness-do-template.md) | Desenho do harness deste template | accepted |
 | [0002](0002-migrations-sql-versionadas.md) | Schema só por migration SQL versionada | accepted |
 | [0003](0003-orm-sequelize.md) | Sequelize como ORM do esqueleto | accepted |
+| [0004](0004-memoria-organizada-por-contexto.md) | Memória em pastas que espelham os contextos | accepted |
