@@ -21,6 +21,11 @@
       "sha256": "3be0bce7c163e33bc02aac8ae644f1829198a8806fca65c9d5de586b560a601b",
       "length": 6,
       "nota": "nome de organização que o dono do template não quer citado"
+    },
+    {
+      "sha256": "d5cdfd1eb951ade4f4c3344fc3fa9132fa3765490d6e7602b1faecc415c02d89",
+      "length": 6,
+      "nota": "nome de design system que o dono do template não quer citado"
     }
   ],
   "proseRoots": [

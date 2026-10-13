@@ -44,6 +44,7 @@ Abra o Claude Code na pasta: o hook SessionStart mostra o estado e a memória.
 
 ## Onde ler mais
 
+- [`docs/harness-template.html`](docs/harness-template.html) — visão geral visual, numa página.
 - [`docs/harness.md`](docs/harness.md) — o porquê de cada peça.
 - [`docs/memory/README.md`](docs/memory/README.md) — o desenho da memória.
 - [`docs/guardrails.md`](docs/guardrails.md) — toda proibição e o sensor que a impõe.
