@@ -28,7 +28,8 @@ import { resolve } from 'node:path'
 
 import { git, isMain, loadConfig, parseFrontmatter, ROOT, today } from './lib.mjs'
 
-export const TYPES = ['gotcha', 'project', 'reference', 'feedback']
+// A ordem é a das seções do índice: o contexto do projeto vem antes das armadilhas.
+export const TYPES = ['project', 'gotcha', 'reference', 'feedback']
 const STATUS = ['active', 'superseded']
 const TYPE_TITLE = {
   gotcha: 'Armadilhas',
