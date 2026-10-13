@@ -12,7 +12,7 @@ esta skill muda no mesmo commit.
 2. `pnpm lint`
 3. `pnpm typecheck`
 4. `pnpm build` — o Vitest não compila como o build; ver
-   `docs/memory/vitest-nao-compila-como-o-build.md`
+   `docs/memory/esqueleto/testes/vitest-nao-compila-como-o-build.md`
 5. `pnpm test`
 6. `pnpm harness:check` e `pnpm harness:test`
 7. Banco: `pnpm db:up`, `pnpm db:migrate`, `pnpm test:e2e` (inclui a paridade

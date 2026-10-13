@@ -56,7 +56,7 @@ Cada uma tem sensor em `docs/guardrails.md` — o hook ou check te avisa se esca
 ## Onde está o quê
 
 - Exemplo vivo de módulo: `src/items/` (skill `novo-modulo` para criar outro). As
-  guardas e armadilhas do esqueleto: `docs/esqueleto.md`.
+  guardas e armadilhas do esqueleto: `docs/contexts/esqueleto/index.md`.
 - Harness: `.claude/` (hooks, skills, agentes), `scripts/harness/`, `harness.config.json`.
 - Proibições e seus sensores: `docs/guardrails.md`. Decisões: `docs/decisions/`.
 - Subagentes: `explorador` (busca só-leitura), `verificador` (roda checks, não

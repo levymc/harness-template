@@ -31,12 +31,20 @@ atualizar é melhor que duplicar.
 
 ## Para salvar
 
-1. `pnpm memory new <slug> --type <gotcha|project|reference|feedback>`
-2. Preencha: `description` que permita decidir relevância sem abrir o arquivo; fato em
+1. **Escolha o contexto.** Em que área de `docs/contexts/` alguém procuraria este
+   fato? O mais específico que existir (`esqueleto/testes` antes de `esqueleto`). Se o
+   fato vale para o projeto inteiro, fica sem contexto, na raiz. Se nenhum contexto
+   serve mas o fato é de uma área clara, crie o contexto antes
+   (`docs/contexts/README.md` diz como) — com o usuário, se a área for nova no projeto.
+2. `pnpm memory new <slug> --type <gotcha|project|reference|feedback> --context <caminho>`
+   (sem `--context` para a raiz).
+3. Preencha: `description` que permita decidir relevância sem abrir o arquivo; fato em
    poucas linhas; `**Por quê:**` (o incidente); `**Como aplicar:**`; `citations` com
    `path` + `anchor` literal (gotcha/project/reference exigem; feedback não).
-3. Ligue com `[[outro-slug]]` quando houver relação.
-4. `pnpm memory index` e `pnpm memory lint`.
+4. Ligue com `[[outro-slug]]` quando houver relação (o slug é único na árvore toda).
+5. `pnpm memory index` e `pnpm memory lint`.
+
+Mudou o contexto de um fato? `git mv` para a pasta nova; não há campo para atualizar.
 
 Tipos: **gotcha** = armadilha do código/stack; **project** = estado ou restrição do
 projeto que o código não conta; **reference** = onde está algo fora do repo;

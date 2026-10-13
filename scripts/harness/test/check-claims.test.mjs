@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { after, describe, it } from 'node:test'
 import { RULES, runChecks } from '../check-claims.mjs'
-import { cleanup, makeRepo, reindex, TERMO, write } from './fixture.mjs'
+import { cleanup, makeRepo, read, reindex, TERMO, write } from './fixture.mjs'
 
 const repos = []
 function repo(extra) {
@@ -204,6 +204,31 @@ describe('memory', () => {
     for (let i = 0; i < 5; i++) write(root, `docs/memory/f${i}x.md`, fato().replace('name: f2', `name: f${i}x`))
     reindex(root)
     assert.match(erros(root, 'memory').join(), /6 fatos ativos \(teto 5\)/)
+  })
+  it('pega fato numa pasta que não corresponde a nenhum contexto', () => {
+    const root = repo()
+    write(root, 'docs/memory/inventado/f2.md', fato())
+    reindex(root)
+    assert.match(erros(root, 'memory').join(), /pasta "inventado" não corresponde a nenhum contexto/)
+  })
+  it('aceita fato na pasta de um contexto existente, inclusive subcontexto', () => {
+    const root = repo({ 'docs/contexts/api/index.md': '# API\n', 'docs/contexts/api/auth/index.md': '# Auth\n' })
+    write(root, 'docs/memory/api/auth/f2.md', fato())
+    reindex(root)
+    assert.deepEqual(erros(root, 'memory'), [])
+    assert.match(read(root, 'docs/memory/MEMORY.md'), /## api\/auth\n\nContexto: \[docs\/contexts\/api\/auth\]\(\.\.\/contexts\/api\/auth\/index\.md\)\n\n- \[f2\]\(api\/auth\/f2\.md\)/)
+  })
+  it('pega slug repetido em contextos diferentes ([[slug]] ficaria ambíguo)', () => {
+    const root = repo({ 'docs/contexts/api/index.md': '# API\n' })
+    write(root, 'docs/memory/api/fato-ok.md', read(root, 'docs/memory/fato-ok.md'))
+    reindex(root)
+    assert.match(erros(root, 'memory').join(), /slug "fato-ok" existe em/)
+  })
+  it('pega campo context: no frontmatter (a pasta é o contexto)', () => {
+    const root = repo()
+    write(root, 'docs/memory/f2.md', fato().replace('type: gotcha\n', 'type: gotcha\ncontext: api\n'))
+    reindex(root)
+    assert.match(erros(root, 'memory').join(), /não use "context:"/)
   })
   it('aceita o tipo no formato da auto-memória (metadata.type)', () => {
     const root = repo()

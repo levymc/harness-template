@@ -66,6 +66,8 @@
     "docs/harness.md",
     "docs/guardrails.md",
     "docs/memory/README.md",
+    "docs/contexts/README.md",
+    "docs/contexts/harness",
     "docs/decisions/0000-template.md",
     "docs/evals/README.md",
     "scripts/harness",

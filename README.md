@@ -49,4 +49,4 @@ Abra o Claude Code na pasta: o hook SessionStart mostra o estado e a memória.
 - [`docs/memory/README.md`](docs/memory/README.md) — o desenho da memória.
 - [`docs/guardrails.md`](docs/guardrails.md) — toda proibição e o sensor que a impõe.
 - [`docs/decisions/`](docs/decisions/README.md) — decisões, inclusive as recusadas.
-- [`docs/esqueleto.md`](docs/esqueleto.md) — o app de exemplo e o que ele já ensinou.
+- [`docs/contexts/esqueleto/index.md`](docs/contexts/esqueleto/index.md) — o app de exemplo e o que ele já ensinou.

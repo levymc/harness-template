@@ -250,7 +250,7 @@ footer div { max-width: 1120px; margin: 0 auto; display: flex; justify-content: 
     </div>
     <div class="stats" role="list">
       <div class="stat" role="listitem"><b>17</b><span>regras no check-claims</span></div>
-      <div class="stat" role="listitem"><b>87</b><span>testes do próprio harness</span></div>
+      <div class="stat" role="listitem"><b>94</b><span>testes do próprio harness</span></div>
       <div class="stat" role="listitem"><b>5</b><span>hooks do Claude Code</span></div>
       <div class="stat" role="listitem"><b>9 + 3</b><span>skills e subagentes</span></div>
     </div>
@@ -312,7 +312,7 @@ footer div { max-width: 1120px; margin: 0 auto; display: flex; justify-content: 
       <div class="mem-grid">
         <div class="card mem">
           <div class="mem-top"><h3>Fatos</h3><span class="pill brand">semântica</span></div>
-          <span class="where">docs/memory/&lt;slug&gt;.md</span>
+          <span class="where">docs/memory/&lt;contexto&gt;/&lt;slug&gt;.md</span>
           <p>Um fato não óbvio por arquivo, com citações ao código. Nunca apagado em silêncio: vira <code>superseded</code> e aponta o que o substituiu.</p>
         </div>
         <div class="card mem">
@@ -333,7 +333,7 @@ footer div { max-width: 1120px; margin: 0 auto; display: flex; justify-content: 
       </div>
 
       <div class="split">
-        <pre aria-label="Anatomia de um fato"><span class="c"># docs/memory/vitest-nao-compila-como-o-build.md</span>
+        <pre aria-label="Anatomia de um fato"><span class="c"># docs/memory/esqueleto/testes/vitest-nao-compila-como-o-build.md</span>
 <span class="k">name:</span> vitest-nao-compila-como-o-build
 <span class="k">description:</span> O Vitest transpila com oxc e ignora
   erros de tipo — e2e verde não prova o build
@@ -349,7 +349,7 @@ footer div { max-width: 1120px; margin: 0 auto; display: flex; justify-content: 
         <div class="card mechs">
           <div class="mech"><span class="dot">1</span><div><b>Citação viva</b><p>O lint reprova o fato cujo arquivo citado sumiu ou cujo trecho <code>anchor</code> não aparece mais.</p></div></div>
           <div class="mech"><span class="dot">2</span><div><b>Suspeito por mudança de código</b><p>Arquivo citado com commit depois de <code>verified</code> deixa o fato suspeito, e o SessionStart avisa.</p></div></div>
-          <div class="mech"><span class="dot">3</span><div><b>Índice gerado, com teto</b><p><code>MEMORY.md</code> é gerado por script; no máximo 60 fatos ativos de até 40 linhas cada.</p></div></div>
+          <div class="mech"><span class="dot">3</span><div><b>Pasta é contexto</b><p>As pastas espelham <code>docs/contexts/</code>. O índice gerado agrupa por contexto, com teto de 60 fatos ativos de até 40 linhas.</p></div></div>
           <div class="mech"><span class="dot">4</span><div><b>Uma memória só</b><p>A auto-memória local do Claude fica desligada. Tudo é versionado e revisado em PR.</p></div></div>
         </div>
       </div>
@@ -461,7 +461,7 @@ footer div { max-width: 1120px; margin: 0 auto; display: flex; justify-content: 
           <ul class="vlist">
             <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>CI no GitHub</b> de ponta a ponta: lint, typecheck, build, unit, harness, migrate e e2e.</span></li>
             <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Hooks no Claude Code real:</b> o contexto do SessionStart chega ao modelo e o <code>reset --hard</code> é bloqueado.</span></li>
-            <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Cada regra e hook</b> vistos falhar por mutação, e a suíte de 87 testes verde.</span></li>
+            <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Cada regra e hook</b> vistos falhar por mutação, e a suíte de 94 testes verde.</span></li>
             <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Adoção num projeto real:</b> nada sobrescrito, e o check copiado achou problemas reais na memória dele.</span></li>
           </ul>
         </div>
