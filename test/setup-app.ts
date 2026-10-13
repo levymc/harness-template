@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { ValidationPipe, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '../src/app.module.js';
@@ -8,7 +9,8 @@ import { AppModule } from '../src/app.module.js';
  * beforeAll — nunca pula em silêncio.
  */
 export async function createApp(): Promise<INestApplication> {
-  process.loadEnvFile?.('.env');
+  // No CI as variáveis vêm do ambiente e não há .env — ler à força quebrou o primeiro CI.
+  if (existsSync('.env')) process.loadEnvFile('.env');
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
   const app = moduleRef.createNestApplication();
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));

@@ -18,7 +18,7 @@ describe('paridade model ↔ schema (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await app?.close();
   });
 
   it('todo model tem tabela e toda coluna declarada existe', async () => {

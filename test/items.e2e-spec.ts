@@ -10,7 +10,7 @@ describe('items (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await app?.close();
   });
 
   it('cria, lê de volta, atualiza e apaga — os valores atravessam o banco', async () => {
