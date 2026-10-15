@@ -10,6 +10,16 @@ import { resolve } from 'node:path'
 import { after, describe, it } from 'node:test'
 import { spawnSync } from 'node:child_process'
 import { cleanup, git, run, TEMPLATE } from './fixture.mjs'
+import { lockDaCamada } from '../adopt.mjs'
+
+describe('lockDaCamada', () => {
+  it('tira do lock a skill de terceiro excluída da camada e mantém as outras', () => {
+    const lock = JSON.stringify({ $comentario: 'x', skills: { fica: { ref: 'a' }, sai: { ref: 'b' } } })
+    const r = JSON.parse(lockDaCamada(lock, path => path === '.claude/skills/sai'))
+    assert.deepEqual(Object.keys(r.skills), ['fica'])
+    assert.equal(r.$comentario, 'x')
+  })
+})
 
 // Num repositório que ADOTOU o harness, estes testes não se aplicam: a origem não é o template.
 const ehTemplate = JSON.parse(readFileSync(resolve(TEMPLATE, 'harness.config.json'), 'utf8')).template === true
@@ -73,6 +83,16 @@ describe('adopt', { skip: naoTemplate }, () => {
     const task = JSON.parse(ler(`work/${tarefa}/task.json`))
     assert.ok(task.criterios.some(c => /CLAUDE\.md/.test(c.descricao)))
     assert.ok(task.criterios.some(c => /1 fato\(s\) de memória existentes migrados/.test(c.descricao)))
+    assert.ok(task.criterios.some(c => /buscar-skills/.test(c.descricao)))
+  })
+
+  it('leva o lock das skills de terceiros e o script que o confere', () => {
+    const config = JSON.parse(readFileSync(resolve(TEMPLATE, 'harness.config.json'), 'utf8'))
+    const doTemplate = JSON.parse(readFileSync(resolve(TEMPLATE, 'skills-lock.json'), 'utf8')).skills
+    const naCamada = Object.keys(doTemplate).filter(nome => !config.layerExclude.includes(`.claude/skills/${nome}`))
+    assert.deepEqual(Object.keys(JSON.parse(ler('skills-lock.json')).skills), naCamada)
+    for (const nome of naCamada) assert.ok(existsSync(resolve(dest, '.claude/skills', nome, 'SKILL.md')), nome)
+    assert.match(JSON.parse(ler('package.json')).scripts.skills, /skills\.mjs/)
   })
 
   // O vermelho que sobra é TRABALHO da adoção (marcadores e a memória antiga a migrar),

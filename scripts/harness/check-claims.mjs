@@ -25,6 +25,7 @@ import { dirname, resolve } from 'node:path'
 
 import { findForbidden, hashTerm, ignoredByGit, isMain, loadConfig, parseFrontmatter, rel, repoFiles, ROOT, toPosix, walk } from './lib.mjs'
 import { lintMemory } from './memory.mjs'
+import { lockedDirs, verifyLock } from './skills.mjs'
 
 /**
  * Só o que está em backtick ou bloco de código conta como comando — prosa casaria.
@@ -142,9 +143,10 @@ export const RULES = [
   {
     id: 'skill-frontmatter',
     descricao: 'toda skill tem frontmatter com name = pasta e description',
-    run({ root }) {
-      const dir = resolve(root, '.claude/skills')
-      return walk(dir, f => f.endsWith('SKILL.md')).flatMap(file => {
+    // pelos arquivos do repositório, não pelo disco: o workspace de eval (gitignored) guarda
+    // cópias de SKILL.md com outro nome de pasta
+    run({ root, files }) {
+      return files.filter(f => f.startsWith('.claude/skills/') && f.endsWith('/SKILL.md')).map(f => resolve(root, f)).flatMap(file => {
         const pasta = toPosix(dirname(file)).split('/').pop()
         const { data } = parseFrontmatter(readFileSync(file, 'utf8'))
         const where = rel(root, file)
@@ -180,6 +182,13 @@ export const RULES = [
       return files
         .filter(file => /(^|\/)SKILL\.md$/.test(file) && !file.startsWith('.claude/skills/'))
         .map(file => `${file}: skill fora de .claude/skills. Cópias por ferramenta divergem (já vimos 7 cópias da mesma skill, todas diferentes); aponte para a fonte única.`)
+    },
+  },
+  {
+    id: 'third-party-skills',
+    descricao: 'skill de terceiro (skills-lock.json) idêntica ao que foi aprovado',
+    run({ root }) {
+      return verifyLock(root)
     },
   },
   {
@@ -332,9 +341,16 @@ export const RULES = [
   },
 ]
 
+/**
+ * Prosa de skill de terceiro fica fora: os caminhos e comandos que ela cita são do repo de
+ * origem (`scripts/x.py` dela, não o nosso), e a integridade dela vem do hash no lock.
+ * Termo proibido e frontmatter continuam cobrados — essas regras não leem `prose`.
+ */
 function proseFiles(root, config) {
+  const travadas = lockedDirs(root)
   return config.proseRoots
     .flatMap(entry => walk(resolve(root, entry), f => f.endsWith('.md')))
+    .filter(file => !travadas.some(dir => rel(root, file).startsWith(`${dir}/`)))
     .map(file => ({ nome: rel(root, file), texto: readFileSync(file, 'utf8') }))
 }
 

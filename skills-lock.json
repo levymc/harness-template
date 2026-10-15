@@ -1,0 +1,25 @@
+{
+  "$comentario": "Gerado por scripts/harness/skills.mjs. Não edite à mão: o check-claims compara o hash de cada pasta.",
+  "skills": {
+    "nestjs-expert": {
+      "repo": "jeffallan/claude-skills",
+      "path": "skills/nestjs-expert",
+      "ref": "4f994f0f3a01c62864c45219d8bc711468dd4c7d",
+      "sha256": "700711d642755335803b5b06764d051b250cc58d2364bdc17b484f8723d887e6",
+      "license": "MIT",
+      "trusted": false,
+      "aprovadoEm": "2026-10-15",
+      "nota": "guards, interceptors, auth e DTOs no Nest; exemplos usam TypeORM/Jest/imports sem .js — as regras do esqueleto vencem (docs/contexts/esqueleto/index.md); módulo novo é com a skill novo-modulo"
+    },
+    "skill-creator": {
+      "repo": "anthropics/skills",
+      "path": "skills/skill-creator",
+      "ref": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "sha256": "4557d54c524c67984e4bab23fa436e90196292ae8df4d2093f0ce0e6951bfc1c",
+      "license": "skills/skill-creator/LICENSE.txt: Apache License",
+      "trusted": true,
+      "aprovadoEm": "2026-10-15",
+      "nota": "criar e avaliar skills do harness; scripts de eval exigem Python e não rodam no Windows (select em pipe); fazem centenas de claude -p"
+    }
+  }
+}

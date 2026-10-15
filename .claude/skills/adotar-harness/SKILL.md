@@ -20,8 +20,9 @@ node scripts/harness/adopt.mjs <caminho-do-projeto>
 
 O script copia só a camada de harness (lista em `harness.config.json` → `layer`),
 **nunca sobrescreve** (conflito vira `<arquivo>.harness-proposto`), zera `forbiddenTerms`,
-desliga as regras específicas do esqueleto, acrescenta os scripts `harness:*` e `memory`
-ao `package.json` se não existirem, e abre a tarefa `work/<data>-adotar-harness/`.
+desliga as regras específicas do esqueleto, acrescenta os scripts `harness:*`, `memory` e
+`skills` ao `package.json` se não existirem, e abre a tarefa `work/<data>-adotar-harness/`.
+As skills de terceiros do template vão junto, com o `skills-lock.json`.
 
 ## 2. Arqueologia (no projeto de destino; use o agente `explorador` para varrer)
 
@@ -37,6 +38,11 @@ ao `package.json` se não existirem, e abre a tarefa `work/<data>-adotar-harness
 
 Confirme com o usuário o que a arqueologia achou: invariantes, o que nunca pode
 acontecer, branches protegidas, como se faz deploy, o que um agente não deve tocar.
+
+Depois, a skill `buscar-skills`, com a stack que a arqueologia achou. As skills que o
+projeto já tinha em pastas de outras ferramentas viram candidatas: substituir por uma
+de fora, consolidar como skill do projeto ou descartar. As skills de terceiros que
+vieram do template e não servem a este projeto saem com `pnpm skills remove <nome>`.
 
 ## 4. Escrever, com o usuário
 

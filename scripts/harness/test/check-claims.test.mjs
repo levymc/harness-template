@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { after, describe, it } from 'node:test'
 import { RULES, runChecks } from '../check-claims.mjs'
+import { hashDir } from '../skills.mjs'
 import { cleanup, makeRepo, read, reindex, TERMO, write } from './fixture.mjs'
 
 const repos = []
@@ -101,6 +102,10 @@ describe('skill-frontmatter', () => {
   it('pega name diferente da pasta', () => {
     assert.match(erros(repo({ '.claude/skills/x/SKILL.md': '---\nname: y\ndescription: uma descrição longa o suficiente para valer aqui\n---\n' }), 'skill-frontmatter')[0], /≠ pasta/)
   })
+  it('ignora cópia de SKILL.md em pasta que o git ignora (workspace de eval)', () => {
+    const copia = { '.gitignore': '.claude/skills/*-workspace/\n', '.claude/skills/x-workspace/snap/SKILL.md': '# cópia\n' }
+    assert.deepEqual(erros(repo(copia), 'skill-frontmatter'), [])
+  })
 })
 
 describe('agent-frontmatter', () => {
@@ -112,6 +117,40 @@ describe('agent-frontmatter', () => {
 describe('single-skill-source', () => {
   it('pega cópia de skill em pasta de outra ferramenta', () => {
     assert.equal(erros(repo({ '.cursor/skills/ok/SKILL.md': 'cópia' }), 'single-skill-source').length, 1)
+  })
+})
+
+describe('skill-frontmatter com escalar de bloco', () => {
+  // `description: |-` é comum em skills de terceiros (a claude-api oficial usa); o parser
+  // lia a description como "|-" e acusava "curta" numa skill válida.
+  const skill = desc => ({ '.claude/skills/bloco/SKILL.md': `---\nname: bloco\ndescription: ${desc}\nlicense: MIT\n---\n\nCorpo.\n` })
+  it('aceita description em bloco longa o bastante', () => {
+    assert.deepEqual(erros(repo(skill('|-\n  Primeira linha da descrição da skill,\n  e a segunda linha completa o sentido.')), 'skill-frontmatter'), [])
+  })
+  it('continua pegando description em bloco curta demais', () => {
+    assert.match(erros(repo(skill('>\n  curta')), 'skill-frontmatter')[0], /curta/)
+  })
+})
+
+// A instalação de verdade (clone por SHA) está em skills.test.mjs.
+describe('third-party-skills', () => {
+  const SKILL = { '.claude/skills/de-fora/SKILL.md': '---\nname: de-fora\ndescription: Skill de terceiro com descrição longa o bastante.\n---\n\nRode `scripts/dela.py`.\n' }
+  function travada() {
+    const root = repo(SKILL)
+    const sha256 = hashDir(`${root}/.claude/skills/de-fora`)
+    write(root, 'skills-lock.json', JSON.stringify({ skills: { 'de-fora': { repo: 'x/y', path: 'de-fora', ref: 'a'.repeat(40), sha256 } } }))
+    return root
+  }
+  it('aceita a skill igual à aprovada, sem cobrar os caminhos de upstream', () => {
+    assert.deepEqual(runChecks(travada()), [])
+  })
+  it('pega a skill travada editada', () => {
+    const root = travada()
+    write(root, '.claude/skills/de-fora/SKILL.md', `${read(root, '.claude/skills/de-fora/SKILL.md')}mais uma linha\n`)
+    assert.match(erros(root, 'third-party-skills')[0], /difere/)
+  })
+  it('sem lock, a mesma pasta é do projeto e a prosa é cobrada', () => {
+    assert.match(erros(repo(SKILL), 'cited-path')[0], /scripts\/dela\.py/)
   })
 })
 

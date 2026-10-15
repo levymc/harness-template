@@ -9,7 +9,8 @@ description: Transforma uma cópia deste template num projeto novo — nome, mem
    e propósito do projeto; se o esqueleto NestJS + Sequelize fica ou sai; quais termos
    nunca podem aparecer no repo (vão para `forbiddenTerms` via
    `node scripts/harness/check-claims.mjs --hash-term <termo>`); se o projeto terá
-   deploy e como.
+   deploy e como; domínio e integrações previstas (banco, nuvem, APIs de terceiros),
+   que orientam a etapa 7.
 2. **Renomeie**: `package.json` (`name`, `description`), `README.md`.
 3. **Memória**: os fatos de exemplo em `docs/memory/` são sobre ESTE template. Mantenha
    os que continuam verdade para o projeto novo (se o esqueleto ficou, os dois valem);
@@ -22,5 +23,8 @@ description: Transforma uma cópia deste template num projeto novo — nome, mem
 6. Sem o esqueleto: apague `src/`, `test/`, `migrations/`, `scripts/db/`, configs de
    Nest/Vitest; desligue `no-sync` e `env-example` em `harness.config.json`; ajuste a
    skill `pre-push` e o CI para os comandos reais.
-7. `pnpm check` verde, e o primeiro commit numa branch (o primeiro commit do repo
+7. **Skills de terceiros**: skill `buscar-skills` com a stack e o domínio da etapa 1.
+   As skills de terceiros que vieram do template estão em `skills-lock.json`. Remova
+   (`pnpm skills remove <nome>`) as que não servem ao projeto novo.
+8. `pnpm check` verde, e o primeiro commit numa branch (o primeiro commit do repo
    pode ir na main; o hook permite).

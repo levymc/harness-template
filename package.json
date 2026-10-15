@@ -24,6 +24,7 @@
     "harness:check": "node scripts/harness/check-claims.mjs",
     "harness:test": "node --test \"scripts/harness/test/*.test.mjs\"",
     "memory": "node scripts/harness/memory.mjs",
+    "skills": "node scripts/harness/skills.mjs",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm harness:check && pnpm harness:test"
   },
   "dependencies": {

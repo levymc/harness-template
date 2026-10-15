@@ -45,8 +45,11 @@ que descrevia um código que já tinha mudado. Daí três princípios:
   migração remota, menção a segredo, termo proibido. Ignora o que está entre aspas e em
   heredoc: `git commit -m "conserta o push to main"` numa branch de feature passa. O
   primeiro commit do repositório passa mesmo na main.
-- **PreToolUse(Read|Edit|Write)** — `file-guard.mjs`: segredo não entra no contexto;
-  termo proibido não entra no repositório (barrado na escrita, antes do check).
+- **PreToolUse(Read|Edit|Write)** — `file-guard.mjs`: segredo não entra no contexto,
+  dentro ou fora do repositório. Termo proibido não entra no repositório: é barrado na
+  escrita, antes do check. Arquivo fora do repo, como o plano do modo plano, não é
+  conferido. O caminho da pasta de configuração do usuário pode conter o termo, e
+  bloquear ali travava o planejamento.
 - **Stop** — `stop-check.mjs`: `check-claims` + typecheck quando há `.ts` alterado.
   Silencioso no sucesso; no fracasso devolve só os erros e o agente continua. Com
   `stop_hook_active` ele deixa parar, para não prender o agente num laço.
@@ -75,6 +78,29 @@ O desenho está em `docs/memory/README.md`. As três escolhas que mais importam:
 Este documento é da camada de harness e viaja na adoção; por isso não fala do código do
 produto. As guardas do esqueleto NestJS + Sequelize do template (e o que ele já
 ensinou) ficam no documento do esqueleto, apontado pelo `AGENTS.md` do template.
+
+## Skills de terceiros
+
+Skill de terceiro é instrução que o agente executa com as permissões dele. Ela entra
+como cópia em `.claude/skills/<nome>/`, fixada em `skills-lock.json` pelo SHA do commit
+revisado e pelo hash da pasta. Quem instala é `scripts/harness/skills.mjs`; a skill
+`buscar-skills` busca, revisa e pede aprovação.
+
+- **Cópia, não plugin.** O conteúdo aparece no diff do PR e não muda quando o upstream
+  dá push. Plugin de marketplace é resolvido na máquina, fora da revisão.
+- **SHA, não branch.** O que foi revisado é o que está instalado. `pnpm skills outdated`
+  avisa quando o upstream andou; atualizar é revisar de novo.
+- **Hash no check.** A regra `third-party-skills` reprova a skill travada que foi
+  editada. Para adaptar uma, tire-a do lock e assuma a autoria.
+- **Prosa de upstream não é cobrada como nossa.** Os caminhos e comandos que ela cita
+  são do repositório de origem, então `cited-path`, `pnpm-script`, `script-flag`,
+  `md-links` e `pending-markers` pulam as pastas do lock. Termo proibido e frontmatter
+  continuam valendo.
+- **Fontes.** `skillSources.trusted` em `harness.config.json` é consultada primeiro. A
+  busca aberta só sugere: skill de fora da lista entra com aprovação explícita do
+  usuário e fica `trusted: false` no lock.
+- **Viajam na adoção.** O lock está na `layer`; o projeto adotado remove as que não
+  servem.
 
 ## Estendendo
 

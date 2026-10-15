@@ -52,6 +52,16 @@
     ".harness",
     "tmp"
   ],
+  "skillSources": {
+    "trusted": [
+      {
+        "repo": "anthropics/skills",
+        "path": "skills",
+        "nota": "repositório oficial de skills da Anthropic"
+      }
+    ]
+  },
+  "$skillSources": "Fontes que a skill buscar-skills consulta primeiro. Skill de fonte fora desta lista só entra com aprovação explícita do usuário e fica marcada trusted:false no skills-lock.json.",
   "checks": {
     "disabled": []
   },
@@ -70,13 +80,15 @@
     "docs/contexts/harness",
     "docs/decisions/0000-template.md",
     "docs/evals/README.md",
+    "skills-lock.json",
     "scripts/harness",
     "work/.gitkeep"
   ],
   "layerExclude": [
     ".claude/skills/novo-modulo",
     ".claude/skills/iniciar-projeto",
-    ".claude/skills/pre-push"
+    ".claude/skills/pre-push",
+    ".claude/skills/nestjs-expert"
   ],
   "$layer": "O que scripts/harness/adopt.mjs leva a um repositório existente. layerExclude é o que é só do template/esqueleto; AGENTS.md, a skill pre-push, o índice da memória, o README das decisões e o guardrails.md são gerados ou filtrados pelo adopt."
 }

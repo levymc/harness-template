@@ -14,7 +14,9 @@ revisão **propõe**; apagar ou aposentar é com o usuário.
    teto → consolide (skill `memoria`).
 2. **Uso**: leia `.harness/usage.jsonl` (local, pode não existir numa máquina nova —
    diga isso em vez de concluir "sem uso"). Skill ou agente sem chamada há 60+ dias →
-   proponha aposentar.
+   proponha aposentar. Skill de terceiro (`pnpm skills list`) sem uso sai primeiro.
+   Para as que ficam, `pnpm skills outdated` mostra se o upstream andou. Atualizar
+   é revisar de novo (skill `buscar-skills`, etapa 3), nunca só trocar o SHA.
 3. **Guardas**: em `docs/guardrails.md`, a coluna "expira quando" já aconteceu para
    alguma? Proponha remover a guarda e registre numa ADR (`superseded`).
 4. **ADRs**: alguma "Revisar quando" foi atingida? Liste para o usuário.

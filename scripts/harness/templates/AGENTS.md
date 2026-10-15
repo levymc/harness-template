@@ -45,6 +45,8 @@ Cada uma tem sensor em `docs/guardrails.md`.
 ## Onde está o quê
 
 - Harness: `.claude/` (hooks, skills, agentes), `scripts/harness/`, `harness.config.json`.
+- Skills de terceiros: fixadas em `skills-lock.json`; buscar e instalar com a skill
+  `buscar-skills`, conferir com `node scripts/harness/skills.mjs verify`.
 - Proibições e seus sensores: `docs/guardrails.md`. Decisões: `docs/decisions/`.
 <!-- pendente: as 3–6 entradas do projeto que um agente novo levaria mais tempo para achar -->
 

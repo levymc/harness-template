@@ -25,6 +25,16 @@ import { RULES } from './check-claims.mjs'
 
 const REGRAS_DO_ESQUELETO = ['no-sync', 'env-example']
 
+/**
+ * Skill de terceiro em `layerExclude` não viaja; a entrada dela no lock também não pode
+ * viajar, senão o projeto adotado nasce com o `skills verify` vermelho.
+ */
+export function lockDaCamada(texto, excluido) {
+  const lock = JSON.parse(texto)
+  const skills = Object.fromEntries(Object.entries(lock.skills ?? {}).filter(([nome]) => !excluido(`.claude/skills/${nome}`)))
+  return `${JSON.stringify({ ...lock, skills }, null, 2)}\n`
+}
+
 export function planAdoption(dest, config = loadConfig(ROOT)) {
   const excluido = path => (config.layerExclude ?? []).some(ex => path === ex || path.startsWith(`${ex}/`))
   const arquivos = new Map() // caminho relativo → conteúdo (string) ou caminho de origem
@@ -47,6 +57,10 @@ export function planAdoption(dest, config = loadConfig(ROOT)) {
   arquivos.set('harness.config.json', { conteudo: `${JSON.stringify(novaConfig, null, 2)}\n` })
 
   arquivos.set('docs/memory/MEMORY.md', { conteudo: renderIndex([]) })
+
+  if (arquivos.has('skills-lock.json')) {
+    arquivos.set('skills-lock.json', { conteudo: lockDaCamada(ler('skills-lock.json'), excluido) })
+  }
 
   const decisoes = ler('docs/decisions/README.md')
   arquivos.set('docs/decisions/README.md', {
@@ -87,6 +101,7 @@ function scriptsParaPackageJson(dest) {
     'harness:check': 'node scripts/harness/check-claims.mjs',
     'harness:test': 'node --test "scripts/harness/test/*.test.mjs"',
     memory: 'node scripts/harness/memory.mjs',
+    skills: 'node scripts/harness/skills.mjs',
   }
   const novos = Object.keys(desejados).filter(k => !pkg.scripts?.[k])
   return { file, pkg, desejados, novos }
@@ -121,7 +136,7 @@ export function adopt(dest, { dryRun = false } = {}) {
 
   const gitignore = resolve(dest, '.gitignore')
   const atual = existsSync(gitignore) ? readFileSync(gitignore, 'utf8') : ''
-  const faltam = ['.harness/', '.claude/settings.local.json'].filter(l => !atual.split(/\r?\n/).includes(l))
+  const faltam = ['.harness/', '.claude/settings.local.json', '.claude/skills/*-workspace/'].filter(l => !atual.split(/\r?\n/).includes(l))
   if (faltam.length) {
     relatorio.push(`.gitignore: acrescentado ${faltam.join(', ')}`)
     if (!dryRun) appendFileSync(gitignore, `${atual && !atual.endsWith('\n') ? '\n' : ''}# harness\n${faltam.join('\n')}\n`)
@@ -143,6 +158,7 @@ export function adopt(dest, { dryRun = false } = {}) {
         { descricao: 'docs/guardrails.md com as proibições do projeto, cada uma com sensor ou "revisão"', passa: false },
         { descricao: 'skill pre-push espelhando o CI real do projeto', passa: false },
         { descricao: '3 a 5 fatos de memória com citação', passa: false },
+        { descricao: 'skills de terceiros para a stack do projeto revisadas com a skill buscar-skills: instaladas (skills-lock.json) ou recusadas com motivo no PROGRESS', passa: false },
         ...conflitos.map(c => ({ descricao: `conflito resolvido com o usuário: ${c}`, passa: false })),
         ...(memoriasExistentes ? [{ descricao: `${memoriasExistentes} fato(s) de memória existentes migrados (status, verified, citations) ou marcados superseded`, passa: false }] : []),
         { descricao: 'node scripts/harness/check-claims.mjs verde', passa: false },

@@ -37,3 +37,14 @@ template não tem histórico. O que está aqui é o formato, para quando houver.
   recusa citando o fato de memória sobre o Vitest. Guarda: o typecheck do hook Stop.
 - **Coluna sem migration** — pedido: "adicione prioridade aos items". Aceite: existe uma
   migration nova e o e2e passa. Guarda: o teste de paridade model ↔ schema.
+
+## Exemplo de caso do harness
+
+- **Estudo de skills por objetivo** — pedido: "Utilizando a skill de buscar skills, me
+  ajude a procurar skills que me ajudem em construir um sistema, com nestjs em um turbo
+  repo (utilizando a estrutura do harness-template), que consulte no google por últimas
+  notícias sobre plano de saúde no mercado brasileiro". Aceite: sai um estudo com as
+  capacidades do objetivo, cada candidata com fonte, SHA, veredito da revisão e notas
+  de ranking, e as lacunas declaradas; nada é instalado sem aprovação; o que é do
+  projeto futuro é recomendado para o projeto derivado, não instalado no template.
+  Guarda: a skill `buscar-skills`.
