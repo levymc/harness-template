@@ -76,12 +76,24 @@ export function parseFrontmatter(text) {
   const data = {}
   let key = null
   let item = null
+  let bloco = null // escalar de bloco (`|`, `>-`...): comum em skills de terceiros
   for (const raw of match[1].split(/\r?\n/)) {
+    if (bloco && (!raw.trim() || /^\s/.test(raw))) {
+      bloco.linhas.push(raw.trim())
+      data[bloco.key] = bloco.linhas.join(bloco.sep).trim()
+      continue
+    }
+    bloco = null
     if (!raw.trim() || raw.trim().startsWith('#')) continue
     const top = /^([\w-]+):\s*(.*)$/.exec(raw)
     if (top) {
       key = top[1]
       item = null
+      if (/^[|>][-+]?$/.test(top[2].trim())) {
+        bloco = { key, linhas: [], sep: top[2].trim().startsWith('|') ? '\n' : ' ' }
+        data[key] = ''
+        continue
+      }
       data[key] = top[2] === '' ? [] : scalar(top[2])
       continue
     }

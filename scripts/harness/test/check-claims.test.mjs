@@ -102,6 +102,10 @@ describe('skill-frontmatter', () => {
   it('pega name diferente da pasta', () => {
     assert.match(erros(repo({ '.claude/skills/x/SKILL.md': '---\nname: y\ndescription: uma descrição longa o suficiente para valer aqui\n---\n' }), 'skill-frontmatter')[0], /≠ pasta/)
   })
+  it('ignora cópia de SKILL.md em pasta que o git ignora (workspace de eval)', () => {
+    const copia = { '.gitignore': '.claude/skills/*-workspace/\n', '.claude/skills/x-workspace/snap/SKILL.md': '# cópia\n' }
+    assert.deepEqual(erros(repo(copia), 'skill-frontmatter'), [])
+  })
 })
 
 describe('agent-frontmatter', () => {
@@ -113,6 +117,18 @@ describe('agent-frontmatter', () => {
 describe('single-skill-source', () => {
   it('pega cópia de skill em pasta de outra ferramenta', () => {
     assert.equal(erros(repo({ '.cursor/skills/ok/SKILL.md': 'cópia' }), 'single-skill-source').length, 1)
+  })
+})
+
+describe('skill-frontmatter com escalar de bloco', () => {
+  // `description: |-` é comum em skills de terceiros (a claude-api oficial usa); o parser
+  // lia a description como "|-" e acusava "curta" numa skill válida.
+  const skill = desc => ({ '.claude/skills/bloco/SKILL.md': `---\nname: bloco\ndescription: ${desc}\nlicense: MIT\n---\n\nCorpo.\n` })
+  it('aceita description em bloco longa o bastante', () => {
+    assert.deepEqual(erros(repo(skill('|-\n  Primeira linha da descrição da skill,\n  e a segunda linha completa o sentido.')), 'skill-frontmatter'), [])
+  })
+  it('continua pegando description em bloco curta demais', () => {
+    assert.match(erros(repo(skill('>\n  curta')), 'skill-frontmatter')[0], /curta/)
   })
 })
 

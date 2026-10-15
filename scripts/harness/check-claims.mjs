@@ -143,9 +143,10 @@ export const RULES = [
   {
     id: 'skill-frontmatter',
     descricao: 'toda skill tem frontmatter com name = pasta e description',
-    run({ root }) {
-      const dir = resolve(root, '.claude/skills')
-      return walk(dir, f => f.endsWith('SKILL.md')).flatMap(file => {
+    // pelos arquivos do repositório, não pelo disco: o workspace de eval (gitignored) guarda
+    // cópias de SKILL.md com outro nome de pasta
+    run({ root, files }) {
+      return files.filter(f => f.startsWith('.claude/skills/') && f.endsWith('/SKILL.md')).map(f => resolve(root, f)).flatMap(file => {
         const pasta = toPosix(dirname(file)).split('/').pop()
         const { data } = parseFrontmatter(readFileSync(file, 'utf8'))
         const where = rel(root, file)

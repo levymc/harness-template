@@ -9,3 +9,5 @@ coverage/
 .harness/
 # configurações pessoais do Claude Code
 .claude/settings.local.json
+# workspaces de eval da skill-creator: podem embutir qualquer arquivo de saída
+.claude/skills/*-workspace/

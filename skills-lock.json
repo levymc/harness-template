@@ -1,4 +1,15 @@
 {
   "$comentario": "Gerado por scripts/harness/skills.mjs. Não edite à mão: o check-claims compara o hash de cada pasta.",
-  "skills": {}
+  "skills": {
+    "skill-creator": {
+      "repo": "anthropics/skills",
+      "path": "skills/skill-creator",
+      "ref": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "sha256": "4557d54c524c67984e4bab23fa436e90196292ae8df4d2093f0ce0e6951bfc1c",
+      "license": "skills/skill-creator/LICENSE.txt: Apache License",
+      "trusted": true,
+      "aprovadoEm": "2026-10-15",
+      "nota": "criar e avaliar skills do harness; scripts de eval exigem Python e não rodam no Windows (select em pipe); fazem centenas de claude -p"
+    }
+  }
 }

@@ -13,3 +13,11 @@
 - pre-push: install, lint, typecheck, build, test, harness:check, harness:test verdes (113 testes do harness).
 - NÃO verificado: pnpm test:e2e — worktree sem .env (DATABASE_URL ausente); a mudança não toca src/. Qualidade da busca aberta (WebSearch) e outdated sob rate limit do GitHub.
 - próximo passo: fechar a tarefa (skill fechar-tarefa) depois do PR, se o usuário pedir.
+
+### 2026-10-15 — buscar-skills rodada no template
+- instalada (aprovada pelo usuário): skill-creator, anthropics/skills@dbd4588 (curada, Apache-2.0). Revisão linha a linha sem conteúdo hostil. Ressalvas: scripts de eval exigem Python e quebram no Windows (select em pipe); loop de descrição faz centenas de `claude -p`; run_eval grava temporário em .claude/commands/; generate_review mata processo na porta 3117 e embute todo arquivo de outputs/ no HTML → `.claude/skills/*-workspace/` no .gitignore (template e adopt).
+- recusada: nestjs-expert (jeffallan/claude-skills@4f994f0, fora da lista) — ensina TypeORM, Jest, imports sem .js e npm; gatilho disputa com novo-modulo.
+- recusada: supabase-postgres-best-practices (supabase/agent-skills@c9be0e9, fora da lista) — conteúdo limpo e 90% Postgres genérico, mas description agressiva cita "declarative schema" e RLS/auth.uid(), e traz `alter system`/DDL solto sem lembrar a regra "schema só por migration"; skill travada não se edita para pôr a ressalva.
+- não há skill oficial de NestJS, Sequelize ou Vitest (busca aberta 2026-10-15).
+- defeitos achados e corrigidos com teste + prove.mjs: parser de frontmatter não lia `description: |-`; adopt levava no lock skill excluída da camada (lockDaCamada); skill-frontmatter lia o disco e acusaria cópias de SKILL.md em workspace gitignored (agora usa os arquivos do repo).
+- pnpm check e build verdes; adopt --dry-run leva os 18 arquivos da skill-creator.

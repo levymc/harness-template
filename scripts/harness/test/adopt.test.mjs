@@ -10,6 +10,16 @@ import { resolve } from 'node:path'
 import { after, describe, it } from 'node:test'
 import { spawnSync } from 'node:child_process'
 import { cleanup, git, run, TEMPLATE } from './fixture.mjs'
+import { lockDaCamada } from '../adopt.mjs'
+
+describe('lockDaCamada', () => {
+  it('tira do lock a skill de terceiro excluída da camada e mantém as outras', () => {
+    const lock = JSON.stringify({ $comentario: 'x', skills: { fica: { ref: 'a' }, sai: { ref: 'b' } } })
+    const r = JSON.parse(lockDaCamada(lock, path => path === '.claude/skills/sai'))
+    assert.deepEqual(Object.keys(r.skills), ['fica'])
+    assert.equal(r.$comentario, 'x')
+  })
+})
 
 // Num repositório que ADOTOU o harness, estes testes não se aplicam: a origem não é o template.
 const ehTemplate = JSON.parse(readFileSync(resolve(TEMPLATE, 'harness.config.json'), 'utf8')).template === true
