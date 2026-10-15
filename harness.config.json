@@ -87,6 +87,7 @@
   "layerExclude": [
     ".claude/skills/novo-modulo",
     ".claude/skills/iniciar-projeto",
+    ".claude/skills/novo-repositorio",
     ".claude/skills/pre-push",
     ".claude/skills/nestjs-expert"
   ],

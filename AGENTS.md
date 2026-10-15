@@ -66,5 +66,5 @@ Cada uma tem sensor em `docs/guardrails.md` — o hook ou check te avisa se esca
 ## Este projeto
 
 harness-template: o esqueleto NestJS 12 + Sequelize existe para dar ao harness algo
-real para guardar. Ao derivar um projeto novo, use a skill `iniciar-projeto`; para
-levar o harness a um projeto existente, a skill `adotar-harness`.
+real para guardar. Criar outro repositório a partir daqui (no GitHub) ou levar o harness
+a um existente: skill `novo-repositorio`, que chama `iniciar-projeto` ou `adotar-harness`.

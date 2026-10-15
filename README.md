@@ -37,6 +37,8 @@ pnpm test:e2e
 
 Abra o Claude Code na pasta: o hook SessionStart mostra o estado e a memória.
 
+- **Repositório novo no GitHub, ou harness num repositório existente:** peça ao Claude
+  com a skill `novo-repositorio` (pergunta objetivo, dono, nome e visibilidade).
 - **Projeto novo a partir daqui:** skill `iniciar-projeto`.
 - **Levar o harness a um projeto existente:**
   `node scripts/harness/adopt.mjs <caminho> --dry-run`, depois sem `--dry-run`, depois a
