@@ -75,6 +75,7 @@ describe('adopt', { skip: naoTemplate }, () => {
 
   it('não leva as skills que são só do template/esqueleto', () => {
     assert.ok(!existsSync(resolve(dest, '.claude/skills/novo-modulo')))
+    assert.ok(!existsSync(resolve(dest, '.claude/skills/novo-repositorio')))
     assert.match(ler('.claude/skills/pre-push/SKILL.md'), /<!-- pendente/)
   })
 
