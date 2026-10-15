@@ -27,3 +27,8 @@
 - em layerExclude: é do esqueleto NestJS, não viaja para projetos adotados (o adopt filtra o lock — lockDaCamada).
 - ressalva escrita em docs/contexts/esqueleto/index.md: stack do projeto vence (Sequelize, Vitest, .js, pnpm, migration); módulo novo é com novo-modulo.
 - adopt.test ajustado: o lock adotado é o do template menos as skills fora da camada. pnpm check verde (117 testes do harness).
+
+### 2026-10-15 — buscar-skills ganha o modo objetivo
+- pedido: "Utilizando a skill de buscar skills, me ajude a procurar skills que me ajudem em <objetivo>".
+- etapa 1 agora escolhe modo repositório ou modo objetivo; o modo objetivo decompõe em capacidades, marca o que skill local já cobre, busca por capacidade (fornecedor oficial antes da busca aberta), ranqueia (frequência, conhecimento que o modelo não tem, compatibilidade, custo) e declara lacunas; estudo vai para work/<data>-<slug>/estudo-skills.md. Projeto futuro: recomenda, instala no derivado.
+- caso de exemplo em docs/evals/README.md. pnpm check verde. Não verificado: a qualidade do estudo (só um uso real mostra).
