@@ -4,6 +4,7 @@
  * bloqueia texto legítimo é desligada, e aí não protege nada.
  */
 import assert from 'node:assert/strict'
+import { resolve } from 'node:path'
 import { after, describe, it } from 'node:test'
 import { cleanup, git, makeRepo, run, TERMO, write } from './fixture.mjs'
 
@@ -103,6 +104,13 @@ describe('file-guard', () => {
     assert.equal(file('Write', { file_path: `${root}/docs/a.md`, content: `cliente ${TERMO}` }).code, 2)
     assert.equal(file('Edit', { file_path: `${root}/docs/a.md`, old_string: 'a', new_string: TERMO }).code, 2)
     assert.equal(file('Write', { file_path: `${root}/docs/a.md`, content: 'texto comum' }).code, 0)
+  })
+  // O modo plano grava fora do repo, numa pasta cujo caminho pode conter o termo: o
+  // bloqueio ali travava o planejamento sem proteger nada versionado.
+  it('não acusa termo em arquivo fora do repositório; segredo continua bloqueado', () => {
+    const fora = resolve(root, '..', `${TERMO}-config`, 'plans', 'plano.md')
+    assert.equal(file('Write', { file_path: fora, content: `plano ${TERMO}` }).code, 0)
+    assert.equal(file('Read', { file_path: resolve(root, '..', 'fora', '.env') }).code, 2)
   })
 })
 
