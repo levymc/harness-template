@@ -52,6 +52,16 @@
     ".harness",
     "tmp"
   ],
+  "skillSources": {
+    "trusted": [
+      {
+        "repo": "anthropics/skills",
+        "path": "skills",
+        "nota": "repositório oficial de skills da Anthropic"
+      }
+    ]
+  },
+  "$skillSources": "Fontes que a skill buscar-skills consulta primeiro. Skill de fonte fora desta lista só entra com aprovação explícita do usuário e fica marcada trusted:false no skills-lock.json.",
   "checks": {
     "disabled": []
   },
@@ -70,6 +80,7 @@
     "docs/contexts/harness",
     "docs/decisions/0000-template.md",
     "docs/evals/README.md",
+    "skills-lock.json",
     "scripts/harness",
     "work/.gitkeep"
   ],

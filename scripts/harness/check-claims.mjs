@@ -25,6 +25,7 @@ import { dirname, resolve } from 'node:path'
 
 import { findForbidden, hashTerm, ignoredByGit, isMain, loadConfig, parseFrontmatter, rel, repoFiles, ROOT, toPosix, walk } from './lib.mjs'
 import { lintMemory } from './memory.mjs'
+import { lockedDirs, verifyLock } from './skills.mjs'
 
 /**
  * Só o que está em backtick ou bloco de código conta como comando — prosa casaria.
@@ -183,6 +184,13 @@ export const RULES = [
     },
   },
   {
+    id: 'third-party-skills',
+    descricao: 'skill de terceiro (skills-lock.json) idêntica ao que foi aprovado',
+    run({ root }) {
+      return verifyLock(root)
+    },
+  },
+  {
     id: 'settings-hygiene',
     descricao: '.claude/settings.json sem caminho absoluto, com auto-memória desligada e hooks que existem',
     run({ root }) {
@@ -332,9 +340,16 @@ export const RULES = [
   },
 ]
 
+/**
+ * Prosa de skill de terceiro fica fora: os caminhos e comandos que ela cita são do repo de
+ * origem (`scripts/x.py` dela, não o nosso), e a integridade dela vem do hash no lock.
+ * Termo proibido e frontmatter continuam cobrados — essas regras não leem `prose`.
+ */
 function proseFiles(root, config) {
+  const travadas = lockedDirs(root)
   return config.proseRoots
     .flatMap(entry => walk(resolve(root, entry), f => f.endsWith('.md')))
+    .filter(file => !travadas.some(dir => rel(root, file).startsWith(`${dir}/`)))
     .map(file => ({ nome: rel(root, file), texto: readFileSync(file, 'utf8') }))
 }
 

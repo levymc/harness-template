@@ -87,6 +87,7 @@ function scriptsParaPackageJson(dest) {
     'harness:check': 'node scripts/harness/check-claims.mjs',
     'harness:test': 'node --test "scripts/harness/test/*.test.mjs"',
     memory: 'node scripts/harness/memory.mjs',
+    skills: 'node scripts/harness/skills.mjs',
   }
   const novos = Object.keys(desejados).filter(k => !pkg.scripts?.[k])
   return { file, pkg, desejados, novos }
@@ -143,6 +144,7 @@ export function adopt(dest, { dryRun = false } = {}) {
         { descricao: 'docs/guardrails.md com as proibições do projeto, cada uma com sensor ou "revisão"', passa: false },
         { descricao: 'skill pre-push espelhando o CI real do projeto', passa: false },
         { descricao: '3 a 5 fatos de memória com citação', passa: false },
+        { descricao: 'skills de terceiros para a stack do projeto revisadas com a skill buscar-skills: instaladas (skills-lock.json) ou recusadas com motivo no PROGRESS', passa: false },
         ...conflitos.map(c => ({ descricao: `conflito resolvido com o usuário: ${c}`, passa: false })),
         ...(memoriasExistentes ? [{ descricao: `${memoriasExistentes} fato(s) de memória existentes migrados (status, verified, citations) ou marcados superseded`, passa: false }] : []),
         { descricao: 'node scripts/harness/check-claims.mjs verde', passa: false },

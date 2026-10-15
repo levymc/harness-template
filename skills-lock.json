@@ -1,0 +1,4 @@
+{
+  "$comentario": "Gerado por scripts/harness/skills.mjs. Não edite à mão: o check-claims compara o hash de cada pasta.",
+  "skills": {}
+}

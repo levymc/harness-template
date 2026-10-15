@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { after, describe, it } from 'node:test'
 import { RULES, runChecks } from '../check-claims.mjs'
+import { hashDir } from '../skills.mjs'
 import { cleanup, makeRepo, read, reindex, TERMO, write } from './fixture.mjs'
 
 const repos = []
@@ -112,6 +113,28 @@ describe('agent-frontmatter', () => {
 describe('single-skill-source', () => {
   it('pega cópia de skill em pasta de outra ferramenta', () => {
     assert.equal(erros(repo({ '.cursor/skills/ok/SKILL.md': 'cópia' }), 'single-skill-source').length, 1)
+  })
+})
+
+// A instalação de verdade (clone por SHA) está em skills.test.mjs.
+describe('third-party-skills', () => {
+  const SKILL = { '.claude/skills/de-fora/SKILL.md': '---\nname: de-fora\ndescription: Skill de terceiro com descrição longa o bastante.\n---\n\nRode `scripts/dela.py`.\n' }
+  function travada() {
+    const root = repo(SKILL)
+    const sha256 = hashDir(`${root}/.claude/skills/de-fora`)
+    write(root, 'skills-lock.json', JSON.stringify({ skills: { 'de-fora': { repo: 'x/y', path: 'de-fora', ref: 'a'.repeat(40), sha256 } } }))
+    return root
+  }
+  it('aceita a skill igual à aprovada, sem cobrar os caminhos de upstream', () => {
+    assert.deepEqual(runChecks(travada()), [])
+  })
+  it('pega a skill travada editada', () => {
+    const root = travada()
+    write(root, '.claude/skills/de-fora/SKILL.md', `${read(root, '.claude/skills/de-fora/SKILL.md')}mais uma linha\n`)
+    assert.match(erros(root, 'third-party-skills')[0], /difere/)
+  })
+  it('sem lock, a mesma pasta é do projeto e a prosa é cobrada', () => {
+    assert.match(erros(repo(SKILL), 'cited-path')[0], /scripts\/dela\.py/)
   })
 })
 

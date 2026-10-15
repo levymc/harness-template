@@ -52,6 +52,7 @@ Cada uma tem sensor em `docs/guardrails.md` — o hook ou check te avisa se esca
 | tipos e build | `pnpm typecheck` · `pnpm build` |
 | o repo diz a verdade sobre si? | `pnpm harness:check` (`--list` mostra as regras) |
 | memória | `pnpm memory verify` · `pnpm memory lint` · `pnpm memory index` |
+| skills de terceiros | `pnpm skills list` · `pnpm skills verify` (instalar: skill `buscar-skills`) |
 
 ## Onde está o quê
 

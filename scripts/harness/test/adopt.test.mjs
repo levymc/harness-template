@@ -73,6 +73,13 @@ describe('adopt', { skip: naoTemplate }, () => {
     const task = JSON.parse(ler(`work/${tarefa}/task.json`))
     assert.ok(task.criterios.some(c => /CLAUDE\.md/.test(c.descricao)))
     assert.ok(task.criterios.some(c => /1 fato\(s\) de memória existentes migrados/.test(c.descricao)))
+    assert.ok(task.criterios.some(c => /buscar-skills/.test(c.descricao)))
+  })
+
+  it('leva o lock das skills de terceiros e o script que o confere', () => {
+    const doTemplate = JSON.parse(readFileSync(resolve(TEMPLATE, 'skills-lock.json'), 'utf8'))
+    assert.deepEqual(JSON.parse(ler('skills-lock.json')).skills, doTemplate.skills)
+    assert.match(JSON.parse(ler('package.json')).scripts.skills, /skills\.mjs/)
   })
 
   // O vermelho que sobra é TRABALHO da adoção (marcadores e a memória antiga a migrar),
