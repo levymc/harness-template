@@ -21,3 +21,9 @@
 - não há skill oficial de NestJS, Sequelize ou Vitest (busca aberta 2026-10-15).
 - defeitos achados e corrigidos com teste + prove.mjs: parser de frontmatter não lia `description: |-`; adopt levava no lock skill excluída da camada (lockDaCamada); skill-frontmatter lia o disco e acusaria cópias de SKILL.md em workspace gitignored (agora usa os arquivos do repo).
 - pnpm check e build verdes; adopt --dry-run leva os 18 arquivos da skill-creator.
+
+### 2026-10-15 — nestjs-expert instalada a pedido explícito do usuário
+- antes recusada (ver entrada anterior); o usuário pediu "adicione a nestjs-expert" — aprovação nomeada de fonte fora da lista. Instalada em jeffallan/claude-skills@4f994f0 (o SHA revisado; HEAD ainda era esse), trusted:false.
+- em layerExclude: é do esqueleto NestJS, não viaja para projetos adotados (o adopt filtra o lock — lockDaCamada).
+- ressalva escrita em docs/contexts/esqueleto/index.md: stack do projeto vence (Sequelize, Vitest, .js, pnpm, migration); módulo novo é com novo-modulo.
+- adopt.test ajustado: o lock adotado é o do template menos as skills fora da camada. pnpm check verde (117 testes do harness).

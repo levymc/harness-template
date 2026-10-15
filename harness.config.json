@@ -87,7 +87,8 @@
   "layerExclude": [
     ".claude/skills/novo-modulo",
     ".claude/skills/iniciar-projeto",
-    ".claude/skills/pre-push"
+    ".claude/skills/pre-push",
+    ".claude/skills/nestjs-expert"
   ],
   "$layer": "O que scripts/harness/adopt.mjs leva a um repositório existente. layerExclude é o que é só do template/esqueleto; AGENTS.md, a skill pre-push, o índice da memória, o README das decisões e o guardrails.md são gerados ou filtrados pelo adopt."
 }

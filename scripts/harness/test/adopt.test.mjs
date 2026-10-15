@@ -87,8 +87,11 @@ describe('adopt', { skip: naoTemplate }, () => {
   })
 
   it('leva o lock das skills de terceiros e o script que o confere', () => {
-    const doTemplate = JSON.parse(readFileSync(resolve(TEMPLATE, 'skills-lock.json'), 'utf8'))
-    assert.deepEqual(JSON.parse(ler('skills-lock.json')).skills, doTemplate.skills)
+    const config = JSON.parse(readFileSync(resolve(TEMPLATE, 'harness.config.json'), 'utf8'))
+    const doTemplate = JSON.parse(readFileSync(resolve(TEMPLATE, 'skills-lock.json'), 'utf8')).skills
+    const naCamada = Object.keys(doTemplate).filter(nome => !config.layerExclude.includes(`.claude/skills/${nome}`))
+    assert.deepEqual(Object.keys(JSON.parse(ler('skills-lock.json')).skills), naCamada)
+    for (const nome of naCamada) assert.ok(existsSync(resolve(dest, '.claude/skills', nome, 'SKILL.md')), nome)
     assert.match(JSON.parse(ler('package.json')).scripts.skills, /skills\.mjs/)
   })
 
