@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { after, describe, it } from 'node:test'
 import { RULES, runChecks } from '../check-claims.mjs'
+import { CATALOG } from '../rules/catalog.mjs'
 import { hashDir } from '../skills.mjs'
 import { cleanup, makeRepo, read, reindex, TERMO, write } from './fixture.mjs'
 
@@ -176,6 +177,10 @@ describe('guardrails-sensors', () => {
   it('pega proibição sem sensor nenhum', () => {
     assert.match(erros(repo(linha('—')), 'guardrails-sensors')[0], /sem sensor/)
   })
+  it('aceita regra do motor que existe; pega a que não existe', () => {
+    assert.deepEqual(erros(repo(linha('`rule:no-force-push`')), 'guardrails-sensors'), [])
+    assert.match(erros(repo(linha('`rule:inventada`')), 'guardrails-sensors')[0], /rule:inventada não existe/)
+  })
   it('aceita "revisão" como gap declarado e arquivo que existe como sensor', () => {
     assert.deepEqual(erros(repo(linha('revisão')), 'guardrails-sensors'), [])
     assert.deepEqual(erros(repo(linha('`src/a.ts`')), 'guardrails-sensors'), [])
@@ -297,6 +302,27 @@ describe('work-tasks', () => {
     const extra = {}
     for (const n of ['a', 'b', 'c']) Object.assign(extra, { [`work/${n}/task.json`]: task, [`work/${n}/PROGRESS.md`]: 'x' })
     assert.match(erros(repo(extra), 'work-tasks')[0], /3 tarefas abertas \(teto 2\)/)
+  })
+})
+
+describe('rule-proofs', () => {
+  it('aceita o catálogo real, com uma seção por regra em docs/regras.md', () => {
+    assert.deepEqual(erros(repo(), 'rule-proofs'), [])
+  })
+  it('pega regra que deixou de barrar o que a prova diz que barra', () => {
+    const muda = CATALOG.map(rule => (rule.id === 'no-force-push' ? { ...rule, evaluate: () => [] } : rule))
+    const e = runChecks(repo(), { only: 'rule-proofs', catalog: muda }).map(x => x.erro).join('\n')
+    assert.match(e, /no-force-push: deveria barrar e deixou passar "git push --force origin feat\/x"/)
+  })
+  it('pega regra que passou a barrar o caso vizinho legítimo', () => {
+    const tudo = CATALOG.map(rule => (rule.id === 'no-discard-work' ? { ...rule, evaluate: () => ['x'] } : rule))
+    assert.match(runChecks(repo(), { only: 'rule-proofs', catalog: tudo }).map(x => x.erro).join('\n'), /no-discard-work: deveria deixar passar/)
+  })
+  it('pega regra sem prova e regra sem seção em docs/regras.md', () => {
+    const semProva = [...CATALOG, { ...CATALOG[0], id: 'nova-regra', proof: { catches: [], allows: [] } }]
+    const e = runChecks(repo(), { only: 'rule-proofs', catalog: semProva }).map(x => x.erro).join('\n')
+    assert.match(e, /nova-regra: proof\.catches vazio/)
+    assert.match(e, /nova-regra sem seção/)
   })
 })
 

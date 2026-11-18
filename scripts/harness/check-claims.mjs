@@ -25,6 +25,8 @@ import { dirname, resolve } from 'node:path'
 
 import { findForbidden, hashTerm, ignoredByGit, isMain, loadConfig, parseFrontmatter, rel, repoFiles, ROOT, toPosix, walk } from './lib.mjs'
 import { lintMemory } from './memory.mjs'
+import { CATALOG } from './rules/catalog.mjs'
+import { catalogProblems } from './rules/engine.mjs'
 import { lockedDirs, verifyLock } from './skills.mjs'
 
 /**
@@ -212,8 +214,8 @@ export const RULES = [
   },
   {
     id: 'guardrails-sensors',
-    descricao: 'toda linha de docs/guardrails.md aponta para um sensor que existe',
-    run({ root }) {
+    descricao: 'toda linha de docs/guardrails.md aponta para um sensor que existe (check-claims:<id>, rule:<id>, ou um arquivo)',
+    run({ root, catalog = CATALOG }) {
       const file = resolve(root, 'docs/guardrails.md')
       if (!existsSync(file)) return []
       const ids = new Set(RULES.map(r => r.id))
@@ -231,7 +233,8 @@ export const RULES = [
         for (const ref of refs) {
           const [alvo, id] = ref.split(':')
           if (alvo === 'check-claims' && !ids.has(id)) erros.push(`docs/guardrails.md: sensor check-claims:${id} não existe`)
-          else if (alvo !== 'check-claims' && !existsSync(resolve(root, alvo))) erros.push(`docs/guardrails.md: sensor ${alvo} não existe`)
+          else if (alvo === 'rule' && !catalog.some(rule => rule.id === id)) erros.push(`docs/guardrails.md: sensor rule:${id} não existe no catálogo do motor`)
+          else if (alvo !== 'check-claims' && alvo !== 'rule' && !existsSync(resolve(root, alvo))) erros.push(`docs/guardrails.md: sensor ${alvo} não existe`)
         }
       }
       return erros
@@ -339,6 +342,17 @@ export const RULES = [
       return erros
     },
   },
+  {
+    id: 'rule-proofs',
+    descricao: 'toda regra do motor (scripts/harness/rules) cumpre o contrato, passa na própria prova e tem seção em docs/regras.md',
+    run({ root, catalog = CATALOG }) {
+      const erros = catalogProblems(catalog)
+      const doc = resolve(root, 'docs/regras.md')
+      if (!existsSync(doc)) return [...erros, 'docs/regras.md ausente: a mensagem de bloqueio aponta para ele']
+      const secoes = new Set([...readFileSync(doc, 'utf8').matchAll(/^## (\S+)\s*$/gm)].map(m => m[1]))
+      return [...erros, ...catalog.filter(rule => !secoes.has(rule.id)).map(rule => `regra ${rule.id} sem seção "## ${rule.id}" em docs/regras.md`)]
+    },
+  },
 ]
 
 /**
@@ -354,9 +368,10 @@ function proseFiles(root, config) {
     .map(file => ({ nome: rel(root, file), texto: readFileSync(file, 'utf8') }))
 }
 
-export function runChecks(root = ROOT, { only } = {}) {
+/** @param catalog só os testes trocam: para ver a `rule-proofs` falhar com uma regra quebrada */
+export function runChecks(root = ROOT, { only, catalog } = {}) {
   const config = loadConfig(root)
-  const ctx = { root, config, files: repoFiles(root), prose: proseFiles(root, config) }
+  const ctx = { root, config, files: repoFiles(root), prose: proseFiles(root, config), ...(catalog ? { catalog } : {}) }
   const desligadas = new Set(config.checks?.disabled ?? [])
   const resultado = []
   for (const rule of RULES) {

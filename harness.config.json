@@ -75,6 +75,7 @@
     ".claude/agents",
     "docs/harness.md",
     "docs/guardrails.md",
+    "docs/regras.md",
     "docs/memory/README.md",
     "docs/contexts/README.md",
     "docs/contexts/harness",

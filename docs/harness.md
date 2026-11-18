@@ -40,24 +40,27 @@ que descrevia um código que já tinha mudado. Daí três princípios:
   o índice da memória. É o ritual de início de sessão dos agentes de longa duração —
   "onde estou, o que foi feito, o que está aberto" — feito por código, porque em prosa
   o agente pula.
-- **PreToolUse(Bash)** — `bash-guard.mjs`: commit na branch protegida, `--force`,
-  `--no-verify`, `reset --hard`, `clean -f`, `rm -rf` fora dos diretórios gerados,
-  migração remota, menção a segredo, termo proibido. Ignora o que está entre aspas e em
-  heredoc: `git commit -m "conserta o push to main"` numa branch de feature passa. O
-  primeiro commit do repositório passa mesmo na main.
-- **PreToolUse(Read|Edit|Write)** — `file-guard.mjs`: segredo não entra no contexto,
-  dentro ou fora do repositório. Termo proibido não entra no repositório: é barrado na
-  escrita, antes do check. Arquivo fora do repo, como o plano do modo plano, não é
-  conferido. O caminho da pasta de configuração do usuário pode conter o termo, e
-  bloquear ali travava o planejamento.
+- **PreToolUse(Bash|PowerShell)** — `bash-guard.mjs` e **PreToolUse(Read|Edit|Write)** —
+  `file-guard.mjs`: entregas finas sobre o **motor de regras** em `scripts/harness/rules/`
+  (ADR 0006). Cada proibição é uma regra com `proof` — os casos que ela tem de barrar e os
+  vizinhos que tem de deixar passar — e a prova roda a cada `pnpm harness:check`
+  (`rule-proofs`). As regras, o que fazer quando cada uma barra e como acrescentar outra:
+  `docs/regras.md`. O parser de shell trata aspas e heredoc como dado
+  (`git commit -m "conserta o push to main"` passa) e desembrulha o que roda por dentro
+  (`bash -c "…"`, `$(…)`, `cmd /c`). Termo proibido é barrado na escrita só dentro do
+  repositório: o plano do modo plano, fora dele, mora numa pasta cujo caminho pode
+  conter o termo.
 - **Stop** — `stop-check.mjs`: `check-claims` + typecheck quando há `.ts` alterado.
   Silencioso no sucesso; no fracasso devolve só os erros e o agente continua. Com
   `stop_hook_active` ele deixa parar, para não prender o agente num laço.
 - **PostToolUse(Skill)** e **SubagentStop** — `usage-log.mjs`: grava o uso em
   `.harness/usage.jsonl`, local. Sem medida, aposentar skill é palpite.
 
-Todos são **fail-open**: um erro interno do hook avisa e deixa passar. Guarda que trava
-tudo quando quebra é desligada no primeiro dia.
+Os informativos (SessionStart, Stop, usage-log) são **fail-open**: erro interno avisa e
+deixa passar. Os dois guardas **falham fechado**: guarda que deixa passar quando quebra não
+protege nada justamente quando mais importa. Para não prender ninguém, com o motor quebrado
+a escrita em `.claude/hooks/`, `scripts/harness/` e `harness.config.json` continua liberada
+— é por ali que se conserta (`docs/regras.md`, "Quando o hook quebra").
 
 ## A memória
 

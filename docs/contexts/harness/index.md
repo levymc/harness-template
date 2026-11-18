@@ -9,7 +9,9 @@ guardas, a memória e as lições que viram checagem. O porquê de cada peça es
 
 ## Onde está
 
-- `.claude/hooks/`: um script por evento do Claude Code, todos fail-open.
+- `.claude/hooks/`: um script por evento do Claude Code. Os informativos são fail-open; os
+  guardas (`bash-guard`, `file-guard`) falham fechado e delegam ao motor em
+  `scripts/harness/rules/` (ADR 0006, `docs/regras.md`).
 - `scripts/harness/check-claims.mjs`: as regras, cada uma com id; `--list` mostra todas.
 - `scripts/harness/memory.mjs`: índice, lint, verificação e criação de fatos.
 - `scripts/harness/prove.mjs`: aplica uma regressão de propósito e confirma o vermelho.

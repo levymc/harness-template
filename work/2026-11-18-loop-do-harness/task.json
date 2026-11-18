@@ -1,0 +1,41 @@
+{
+  "objetivo": "O template fica com a memória que já tem e ganha o loop de melhoria do harness de referência: motor de regras com prova, validação antes do pronto, mutação no CI, loop de atrito, a barra e a medição de maturidade — tudo neutralizado (sem nome de organização nem sistemas internos).",
+  "contexto": "Pedido do dono do template em 2026-11-18. O harness de referência foi lido da cópia local do plugin instalado; ele não tem memória de agente. O plano aprovado está resumido nas fatias abaixo e no PROGRESS.md.",
+  "criterios": [
+    {
+      "descricao": "Fatia 1: bash-guard e file-guard delegam a um motor em scripts/harness/rules/ com proof (catches/allows) por regra; check-claims tem a regra rule-proofs; erro do motor sai com 2; bash -c \"git push --force\" é barrado; hooks.test.mjs continua verde",
+      "passa": true
+    },
+    {
+      "descricao": "Fatia 2: skill validar-antes-de-concluir, falhas.mjs (sai 3 na 2a falha igual), revisao-fria.mjs + agente revisor-frio, skills cobrir-lacunas-de-teste e testes-agenticos; work-tasks exige evidência no PROGRESS para passa:true; skill-frontmatter exige no máximo 280 caracteres e 'Use quando'",
+      "passa": false
+    },
+    {
+      "descricao": "Fatia 3: stryker.config.json, scripts/harness/mutacao.mjs planejar|rodar só nas linhas adicionadas, workflow mutacao.yml, script pnpm mutation",
+      "passa": false
+    },
+    {
+      "descricao": "Fatia 4: skills relatar-atrito (gh issue label atrito, ou texto) e triar-atrito; sessao.mjs, atrito.mjs (recusa citação inventada), triagem.mjs (recusa sem saída vermelha), conferir-sessao.mjs chamado pela fechar-tarefa",
+      "passa": false
+    },
+    {
+      "descricao": "Fatia 5: barra.mjs acusa diff que toca a barra (mudança, teste trocado, .skip); conferir-fluxo.mjs exige revisão no commit da ponta ou comentário de Autorização do merge; workflow fluxo.yml com pull_request_target e checkout da main; invariante no AGENTS.md; ADR",
+      "passa": false
+    },
+    {
+      "descricao": "Fatia 6: skill achar-o-proximo-degrau, docs/gastar-menos-uso.md, docs/harness.md e README atualizados, números do harness-template.html conferidos por regra do check, layer do adopt inclui as peças novas",
+      "passa": false
+    },
+    {
+      "descricao": "pnpm check verde e pnpm memory verify sem fato quebrado ao fim; cada guarda nova provada com prove.mjs",
+      "passa": false
+    }
+  ],
+  "fora_de_escopo": [
+    "auditoria selada da barra / PRs-armadilha",
+    "arquitetura em camadas da referência, telemetria, faixa de status, clientes Codex/OpenCode, ponte Copilot",
+    "juiz por LLM externo",
+    "skills dependentes de Jira, APM, ambientes temporários, Figma, Sonar, nuvem",
+    "abrir PR ou fazer merge sem pedido do usuário"
+  ]
+}

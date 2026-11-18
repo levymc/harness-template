@@ -114,17 +114,54 @@ describe('file-guard', () => {
   })
 })
 
-describe('fail-open', () => {
-  // A primeira versão deste teste mandava stdin vazio — que nunca chega ao catch. Um hook
-  // trocado para "fail-closed" passava verde. Provocar o erro interno de verdade é o
-  // único jeito de testar o caminho de erro.
-  it('erro interno (config ausente) avisa e deixa passar, sem bloquear', async () => {
-    const { rmSync } = await import('node:fs')
-    const root = repo()
-    rmSync(`${root}/harness.config.json`)
-    const r = bash(root, 'git commit -m x')
+describe('bash-guard: o que o guarda antigo não via', () => {
+  const root = repo({ branch: 'feat/x' })
+  // O bash-guard antigo tirava tudo o que estava entre aspas antes de olhar — inclusive o
+  // comando de dentro do `bash -c "…"`. Era o caminho mais curto para esconder um push forçado.
+  it('barra o comando escondido em bash -c, sh -c e $(…)', () => {
+    bloqueia(root, 'bash -c "git push --force origin feat/x"')
+    bloqueia(root, "sh -c 'git reset --hard'")
+    bloqueia(root, 'echo $(cat .env)')
+  })
+  it('barra pela ferramenta PowerShell também', () => {
+    const r = run('.claude/hooks/bash-guard.mjs', { root, input: { tool_name: 'PowerShell', tool_input: { command: 'Remove-Item -Recurse -Force src' }, cwd: root } })
+    assert.equal(r.code, 2)
+  })
+  it('a mensagem diz a regra e onde ler o porquê', () => {
+    assert.match(bash(root, 'git push -f').err, /\[no-force-push\].*docs\/regras\.md#no-force-push/)
+  })
+  it('regra em warn avisa o modelo sem bloquear', () => {
+    const r = bash(root, 'git commit -m "arrumei umas coisas"')
     assert.equal(r.code, 0)
-    assert.match(r.err, /erro interno, deixando passar/)
+    assert.match(JSON.parse(r.out).hookSpecificOutput.additionalContext, /\[commit-message-format\]/)
+  })
+})
+
+describe('fail-closed (ADR 0006)', () => {
+  // Provocar o erro interno de verdade é o único jeito de testar o caminho de erro: a
+  // primeira versão do teste antigo mandava stdin vazio, que nunca chegava ao catch.
+  const quebrado = async () => {
+    const { rmSync } = await import('node:fs')
+    const root = repo({ branch: 'feat/x' })
+    rmSync(`${root}/harness.config.json`)
+    return root
+  }
+  it('bash-guard com o motor quebrado (config ausente) barra, e diz como sair', async () => {
+    const r = bash(await quebrado(), 'git status')
+    assert.equal(r.code, 2)
+    assert.match(r.err, /erro interno, barrando por segurança/)
+  })
+  it('file-guard quebrado barra a escrita comum, mas deixa consertar o próprio guarda', async () => {
+    const root = await quebrado()
+    const file = (tool_name, tool_input) => run('.claude/hooks/file-guard.mjs', { root, input: { tool_name, tool_input } })
+    assert.equal(file('Write', { file_path: `${root}/src/a.ts`, content: 'x' }).code, 2)
+    assert.equal(file('Write', { file_path: `${root}/harness.config.json`, content: '{}' }).code, 0)
+    assert.equal(file('Edit', { file_path: `${root}/scripts/harness/rules/x.mjs`, new_string: 'x' }).code, 0)
+    assert.equal(file('Write', { file_path: `${root}/scripts/harness/.env`, content: 'x' }).code, 2)
+  })
+  it('hook informativo continua fail-open', async () => {
+    const r = run('.claude/hooks/stop-check.mjs', { root: await quebrado(), input: { stop_hook_active: false } })
+    assert.notEqual(r.code, 2)
   })
 })
 

@@ -22,6 +22,7 @@ import { dirname, resolve } from 'node:path'
 import { isMain, loadConfig, rel, ROOT, today, walk } from './lib.mjs'
 import { renderIndex } from './memory.mjs'
 import { RULES } from './check-claims.mjs'
+import { CATALOG } from './rules/catalog.mjs'
 
 const REGRAS_DO_ESQUELETO = ['no-sync', 'env-example']
 
@@ -75,6 +76,7 @@ export function planAdoption(dest, config = loadConfig(ROOT)) {
     const sensor = linha.split('|')[3] ?? ''
     return [...sensor.matchAll(/`([^`]+)`/g)].map(m => m[1]).every(ref => {
       const [alvo, id] = ref.split(':')
+      if (alvo === 'rule') return CATALOG.some(rule => rule.id === id)
       return alvo === 'check-claims' ? ativas.has(id) : vaiExistir(alvo)
     })
   })

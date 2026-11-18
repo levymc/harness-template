@@ -12,6 +12,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { hashTerm } from '../lib.mjs'
 import { renderIndex, loadFacts } from '../memory.mjs'
+import { CATALOG } from '../rules/catalog.mjs'
 
 export const TEMPLATE = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
 /** Termo proibido só dos testes — o mecanismo é o mesmo dos termos reais. */
@@ -41,6 +42,7 @@ const BASE = {
   '.claude/skills/ok/SKILL.md': '---\nname: ok\ndescription: Uma skill válida com descrição longa o bastante para disparar.\n---\n\nCorpo.\n',
   '.claude/agents/ok.md': '---\nname: ok\ndescription: agente válido\ntools: Read, Grep\n---\n\nCorpo.\n',
   'docs/guardrails.md': '| Nunca | Por quê | Sensor | Origem | Expira quando |\n|---|---|---|---|---|\n| sync | schema | `check-claims:no-sync` | x | nunca |\n| julgar | x | revisão | x | nunca |\n',
+  'docs/regras.md': `# Regras\n\n${CATALOG.map(rule => `## ${rule.id}\n\n${rule.reason}\n`).join('\n')}`,
   'docs/decisions/0001-uma.md': '---\nstatus: accepted\n---\n\n# 0001\n\n## Revisar quando\n\nnunca\n',
   'docs/memory/fato-ok.md': `---
 name: fato-ok
