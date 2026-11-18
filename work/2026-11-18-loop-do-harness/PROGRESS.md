@@ -41,3 +41,12 @@
 - evidência (critério 4): `pnpm check` exit 0 — harness:test 195/195; auditoria da sessão real: 1 falta, a esperada (resumo final ainda não escrito); `prove.mjs --lista` com 6 sabotagens (citação literal, vermelho da triagem, segredo no relato, push pelo parser, limite de edições, mascaramento de MAIÚSCULAS=) → as 6 PEGAS.
 - não verificado: `gh issue create/list` contra o GitHub de verdade (só pelo dublê no teste).
 - próximo passo: fatia 5 (a barra).
+
+### 2026-11-18 — fatia 5: a barra
+- feito: `scripts/harness/barra.mjs` (guardas por caminho para 8 itens: gate, regras/hooks, piso de mutação, sabotagem, revisão fria, triagem/auditoria, conferidor, autorização; sinais mudança/linha/trocada/termo/entra/donos), `conferir-fluxo.mjs` (revisão aprovada na ponta por quem não é o autor, ou autorização do merge citando o commit da ponta), `.github/workflows/fluxo.yml` (pull_request_target + issue_comment + dispatch, checkout só da main, publica o status "conferidor do fluxo"), regra `no-merge-by-agent` no motor, ADR 0007, invariante no AGENTS.md (77 linhas, teto 80), seção "O loop de melhoria e a barra" no docs/harness.md, pre-push roda a barra.
+- decisão: sem auditoria selada (fora do escopo); num repo de um dono só, a autorização por comentário é o caminho, e a regra do motor impede o agente de escrevê-la pelo comando.
+- achado: a primeira versão contava linha de JSDoc (` * texto`) como código — mudar doc de hook acionaria a barra. Corrigido com teste (a abertura `/*` continua contando).
+- achado: a sabotagem achou 2 lacunas reais nos testes da barra (linha que só muda de lugar; termo que vai da skill para docs/ não compensa) — testes acrescentados, as 3 sabotagens agora PEGAS. Uma sabotagem minha era inócua (`/NUNCA|…/` não desliga a regex) — refeita.
+- evidência (critério 5): `pnpm check` exit 0 — harness:test 212/212 (antes dos 2 casos novos), `✓ 19 regras conferidas`; `barra.mjs --base origin/main` nesta branch acusa os 8 itens (este PR precisa da autorização do dono); conferidor testado contra servidor HTTP local no papel da API; `prove.mjs --lista` 8 sabotagens: 5 pegas de primeira, 3 pegas depois dos testes novos.
+- não verificado: o workflow `fluxo` e o status no GitHub de verdade; a proteção da main exigindo o status é configuração manual.
+- próximo passo: fatia 6 (maturidade, custo, documentação, HTML).

@@ -7,6 +7,7 @@ import commitMessageFormat from './commit-message-format.mjs'
 import forbiddenTerm from './forbidden-term.mjs'
 import noDiscardWork from './no-discard-work.mjs'
 import noForcePush from './no-force-push.mjs'
+import noMergeByAgent from './no-merge-by-agent.mjs'
 import noRecursiveDelete from './no-recursive-delete.mjs'
 import noRemoteMigration from './no-remote-migration.mjs'
 import noSecretAccess from './no-secret-access.mjs'
@@ -22,5 +23,6 @@ export const CATALOG = Object.freeze([
   protectedBranch,
   noForcePush,
   noDiscardWork,
+  noMergeByAgent,
   commitMessageFormat,
 ])

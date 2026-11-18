@@ -20,6 +20,8 @@ guardas, a memória e as lições que viram checagem. O porquê de cada peça es
   do "pronto" e da cobertura de lacunas.
 - `scripts/harness/sessao.mjs`, `atrito.mjs`, `conferir-sessao.mjs`: o loop de atrito (skills
   `relatar-atrito` e `triar-atrito`) e a auditoria do ritual numa sessão real.
+- `scripts/harness/barra.mjs` e `conferir-fluxo.mjs`: a barra (o que o loop não muda sem a
+  decisão de outra pessoa) e o conferidor que o workflow `fluxo` roda da `main` (ADR 0007).
 - `scripts/harness/suite.mjs` e `teto-de-memoria.mjs`: a suíte com Temp limpa e teto de RAM.
 - `mutacao.mjs` (em scripts/harness), `stryker.config.json` (harness) e
   `stryker.produto.config.json` (src/, Vitest): a mutação do PR. Só do template: depende do

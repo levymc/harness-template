@@ -53,6 +53,13 @@ usuário pedindo.
 `git reset --hard`, `git clean -f`, `git checkout .`, `git restore .`. **O que fazer:** para
 deixar trabalho de lado, commit WIP ou `git stash push -u -m <tag>`.
 
+## no-merge-by-agent
+
+`gh pr merge`, `gh pr review --approve`, merge pela API, e qualquer comando `gh` com a
+autorização do merge. **O que fazer:** abra o PR (quando o usuário pedir) e peça a decisão;
+quem aprova, faz o merge ou escreve a autorização é uma pessoa que não escreveu o PR. É o que
+dá valor à barra (ADR 0007).
+
 ## commit-message-format
 
 Em `warn`: mensagem de commit fora de `tipo(escopo): assunto`. Merge, revert e `fixup!`

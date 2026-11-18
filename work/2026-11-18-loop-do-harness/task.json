@@ -20,7 +20,7 @@
     },
     {
       "descricao": "Fatia 5: barra.mjs acusa diff que toca a barra (mudança, teste trocado, .skip); conferir-fluxo.mjs exige revisão no commit da ponta ou comentário de Autorização do merge; workflow fluxo.yml com pull_request_target e checkout da main; invariante no AGENTS.md; ADR",
-      "passa": false
+      "passa": true
     },
     {
       "descricao": "Fatia 6: skill achar-o-proximo-degrau, docs/gastar-menos-uso.md, docs/harness.md e README atualizados, números do harness-template.html conferidos por regra do check, layer do adopt inclui as peças novas",

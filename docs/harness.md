@@ -87,6 +87,31 @@ Este documento é da camada de harness e viaja na adoção; por isso não fala d
 produto. As guardas do esqueleto NestJS + Sequelize do template (e o que ele já
 ensinou) ficam no documento do esqueleto, apontado pelo `AGENTS.md` do template.
 
+## O loop de melhoria e a barra
+
+O harness melhora pelo que o atrapalhou, num ciclo com prova em cada passo (ADR 0007):
+
+1. **Atrito entra** pela skill `relatar-atrito` (issue com label `atrito`, trecho literal da
+   sessão) ou pela auditoria da sessão no fechamento da tarefa (`conferir-sessao.mjs`).
+2. **Triagem** (`triar-atrito`): reproduz na `main`; defeito só é aceito com o teste novo
+   **vermelho** contra ela.
+3. **Conserto** é tarefa comum: `iniciar-tarefa`, o vermelho vira verde, a `licao` decide se
+   sobe para regra ou hook.
+4. **Prova**: `validar-antes-de-concluir` — gate inteiro, parada na segunda falha igual,
+   revisão fria por um agente sem a conversa — e a mutação nas linhas novas do PR.
+5. **A barra não se mexe pelo loop.** O ciclo muda como o harness trabalha, nunca a régua que o
+   julga sem a decisão de outra pessoa: o PR que toca o gate, as regras e hooks, os pisos, a
+   prova por sabotagem, a revisão fria, a triagem ou o próprio conferidor (`barra.mjs` lista as
+   guardas) só entra com revisão aprovada **no último commit** por quem não o escreveu, ou com o
+   comentário de autorização do merge citando esse commit. No código da barra, qualquer mudança
+   conta, também a que aperta: máquina não separa apertar de afrouxar com certeza. Quem julga é o
+   workflow `fluxo`, que roda o conferidor da `main` (o PR não troca quem o julga). O agente
+   nunca aprova, faz merge ou escreve a autorização (regra `no-merge-by-agent`).
+
+Limites assumidos: a frase reescrita que afrouxa o sentido mantendo o termo não é acusada — fica
+para a revisão fria e para quem lê; e exigir o status `conferidor do fluxo` na proteção da
+`main` é configuração do dono do repositório, que nenhum arquivo daqui garante.
+
 ## Skills de terceiros
 
 Skill de terceiro é instrução que o agente executa com as permissões dele. Ela entra

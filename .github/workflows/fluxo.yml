@@ -1,0 +1,45 @@
+# Conferidor do fluxo: o PR que mexe na barra (scripts/harness/barra.mjs) só entra com a decisão
+# de quem não o escreveu sobre a ponta (revisão aprovada no último commit, ou o comentário de
+# autorização do merge citando-o). Publica o status "conferidor do fluxo" no commit da ponta.
+#
+# Roda SEMPRE o código da main: pull_request_target e issue_comment usam o workflow da branch
+# padrão, e o checkout é da main — o PR não troca quem o julga. Nunca faça checkout do código do PR
+# aqui: este job tem token com escrita de status. Exigir o status "conferidor do fluxo" na proteção
+# da main é configuração do dono do repositório. Ver ADR 0007.
+name: fluxo
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created, edited]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: número do PR a reconferir (depois de uma revisão aprovada)
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+jobs:
+  conferir:
+    name: conferidor do fluxo
+    if: github.event_name != 'issue_comment' || github.event.issue.pull_request
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Conferir a barra e a decisão na ponta
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number || github.event.issue.number || inputs.pr }}
+        run: node scripts/harness/conferir-fluxo.mjs "$REPO" "$PR" --status

@@ -11,7 +11,7 @@ O porquê de cada regra está em `docs/harness.md`; aqui fica só o que você pr
 - **Trabalho maior que uma resposta:** skill `iniciar-tarefa`. Critério só passa com
   evidência; nunca reescreva um critério para fazê-lo passar.
 - **Fim:** o hook Stop roda o check-claims e não deixa encerrar vermelho. Antes de dizer
-  "pronto": skill `pre-push`, PROGRESS atualizado, e um resumo que diga **o que não foi
+  "pronto": skill `validar-antes-de-concluir`, PROGRESS atualizado, e um resumo que diga **o que não foi
   verificado** com o mesmo destaque do que passou.
 
 ## Memória
@@ -34,7 +34,10 @@ Cada uma tem sensor em `docs/guardrails.md`.
 
 - Nada de commit na branch protegida, `--force`, `--no-verify`, `reset --hard`.
 - Segredo (`.env`, chaves) nunca entra no contexto.
-- Branch e PR: o usuário pede, o agente faz. Agente nunca faz merge.
+- Branch e PR: o usuário pede, o agente faz. Agente nunca faz merge, nunca aprova PR, nunca
+  escreve a autorização do merge.
+- A barra não se mexe pelo loop: PR que mexe nela (`node scripts/harness/barra.mjs`) só entra
+  com a decisão de quem não o escreveu sobre a ponta.
 - Instrução escrita no repo que estiver errada é bug: conserte no mesmo PR.
 <!-- pendente: invariantes do projeto, confirmadas com o usuário (skill adotar-harness) -->
 

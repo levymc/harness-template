@@ -23,7 +23,9 @@ Pare no primeiro vermelho e conserte; não pule passo. Se um passo não puder ro
 silêncio parece aprovação.
 
 Gate verde é o passo 1 da skill `validar-antes-de-concluir`, não o "pronto": antes de
-abrir PR, faça também a prova do comportamento e a revisão fria dela.
+abrir PR, faça também a prova do comportamento e a revisão fria dela. E rode
+`node scripts/harness/barra.mjs --base origin/main`: se a branch mexe na barra, a lista vai
+no corpo do PR, e o merge depende da decisão de quem não o escreveu.
 
 Nunca: `--no-verify`, push para branch protegida, `--force` (o hook `bash-guard`
 bloqueia os três).
