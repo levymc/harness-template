@@ -58,6 +58,7 @@ export default {
   reason: 'Mensagem fora do padrão tipo(escopo): assunto quebra o histórico legível e as ferramentas que leem o tipo do commit.',
   points: ['agent-hook'],
   defaultMode: 'warn',
+  // Stryker disable all: a prova é o teste da regra — mutar um caso dela é mutar o teste (um "allows" trocado por vazio passa por construção)
   proof: {
     catches: [
       { command: 'git commit -m "arrumei umas coisas"' },
@@ -73,6 +74,7 @@ export default {
       { command: 'git commit --amend --no-edit' },
     ],
   },
+  // Stryker restore all
   evaluate(action, config) {
     const types = config?.rules?.['commit-message-format']?.types ?? DEFAULT_TYPES
     return commitMessagesIn(action).flatMap(message => messageProblems(message, types))

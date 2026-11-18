@@ -13,6 +13,7 @@ export default {
   reason: 'O dono do repositório decidiu que certos nomes nunca aparecem nele; o termo é guardado só como hash.',
   points: ['agent-hook'],
   defaultMode: 'block',
+  // Stryker disable all: a prova é o teste da regra — mutar um caso dela é mutar o teste (um "allows" trocado por vazio passa por construção)
   proof: {
     catches: [
       { command: 'git commit -m "integra com TermoDeProva"' },
@@ -27,6 +28,7 @@ export default {
       { kind: 'file', tool: 'Read', path: '/repo/docs/a.md', content: 'termodeprova' },
     ],
   },
+  // Stryker restore all
   evaluate(action, config) {
     const terms = config?.forbiddenTerms
     if (action.kind === 'shell') {

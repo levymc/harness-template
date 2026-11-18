@@ -32,6 +32,7 @@ export default {
   reason: 'Apagar recursivamente fora dos diretórios gerados destrói fonte que talvez não esteja no git.',
   points: ['agent-hook'],
   defaultMode: 'block',
+  // Stryker disable all: a prova é o teste da regra — mutar um caso dela é mutar o teste (um "allows" trocado por vazio passa por construção)
   proof: {
     catches: [
       { command: 'rm -rf src' },
@@ -56,6 +57,7 @@ export default {
       { command: 'git commit -m "nunca rode rm -rf src"' },
     ],
   },
+  // Stryker restore all
   evaluate(action, config) {
     if (action.kind !== 'shell') return []
     const seguros = new Set(config?.safeRmTargets ?? [])

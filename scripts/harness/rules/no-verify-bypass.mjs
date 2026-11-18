@@ -19,6 +19,7 @@ export default {
   reason: 'Pular os hooks do git esconde o problema que eles apontaram em vez de consertá-lo.',
   points: ['agent-hook'],
   defaultMode: 'block',
+  // Stryker disable all: a prova é o teste da regra — mutar um caso dela é mutar o teste (um "allows" trocado por vazio passa por construção)
   proof: {
     catches: [
       { command: 'git commit --no-verify -m x' },
@@ -35,6 +36,7 @@ export default {
       { command: 'git push -n origin feat/x' },
     ],
   },
+  // Stryker restore all
   evaluate(action) {
     if (action.kind !== 'shell') return []
     const found = []

@@ -50,7 +50,9 @@
     "dist",
     "coverage",
     ".harness",
-    "tmp"
+    "tmp",
+    ".stryker-tmp",
+    "reports"
   ],
   "skillSources": {
     "trusted": [

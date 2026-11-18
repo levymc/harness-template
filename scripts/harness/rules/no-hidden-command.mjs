@@ -24,6 +24,7 @@ export default {
   reason: 'Comando montado ou lido da entrada na hora de rodar escapa de todas as outras regras.',
   points: ['agent-hook'],
   defaultMode: 'block',
+  // Stryker disable all: a prova é o teste da regra — mutar um caso dela é mutar o teste (um "allows" trocado por vazio passa por construção)
   proof: {
     catches: [
       { command: 'echo "git push -f" | bash' },
@@ -45,6 +46,7 @@ export default {
       { command: 'git ls-files | xargs grep -n TODO' },
     ],
   },
+  // Stryker restore all
   evaluate(action) {
     if (action.kind !== 'shell') return []
     const found = []

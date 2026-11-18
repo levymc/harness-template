@@ -1,18 +1,31 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
-  "$comentario": "Mutação do harness (scripts .mjs testados com node:test). O comando de cada fatia é montado por scripts/harness/mutacao.mjs, só com os testes que alcançam os arquivos dela. O produto (src/, Vitest) está em stryker.produto.config.json.",
+  "$comentario": "Mutação do harness (scripts .mjs testados com node:test). O comando de cada fatia é montado por scripts/harness/mutacao.mjs, só com os testes que alcançam os arquivos dela. O produto (src/, Vitest) está em stryker.produto.config.json. concurrency 1: as corridas em paralelo disputavam a máquina, e mutante sobrevivente virava timeout (que conta como pego) — 100% falso onde o real era 25%.",
   "testRunner": "command",
-  "commandRunner": { "command": "node scripts/harness/suite.mjs" },
+  "commandRunner": {
+    "command": "node scripts/harness/suite.mjs"
+  },
   "coverageAnalysis": "off",
   "inPlace": true,
+  "disableTypeChecks": false,
   "mutate": [
     "scripts/harness/**/*.mjs",
     ".claude/hooks/*.mjs",
     "!scripts/harness/test/**",
     "!scripts/harness/templates/**"
   ],
-  "reporters": ["clear-text", "html", "json", "progress"],
-  "thresholds": { "high": 90, "low": 80, "break": 80 },
+  "reporters": [
+    "clear-text",
+    "html",
+    "json",
+    "progress"
+  ],
+  "thresholds": {
+    "high": 90,
+    "low": 80,
+    "break": 80
+  },
   "timeoutMS": 20000,
-  "timeoutFactor": 1.5
+  "timeoutFactor": 1.5,
+  "concurrency": 1
 }

@@ -5,6 +5,7 @@
   "plugins": ["@stryker-mutator/vitest-runner"],
   "vitest": { "configFile": "vitest.config.ts" },
   "coverageAnalysis": "perTest",
+  "disableTypeChecks": false,
   "mutate": [
     "src/**/*.ts",
     "!src/**/*.spec.ts",

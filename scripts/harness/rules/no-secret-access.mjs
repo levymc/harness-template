@@ -30,6 +30,7 @@ export default {
   reason: 'Segredo lido pelo agente vaza para logs e para o provedor do modelo; o .env.example diz quais variáveis existem.',
   points: ['agent-hook'],
   defaultMode: 'block',
+  // Stryker disable all: a prova é o teste da regra — mutar um caso dela é mutar o teste (um "allows" trocado por vazio passa por construção)
   proof: {
     catches: [
       { command: 'cat .env' },
@@ -55,6 +56,7 @@ export default {
       { kind: 'file', tool: 'Read', path: '/repo/src/config/env.ts' },
     ],
   },
+  // Stryker restore all
   evaluate(action) {
     if (action.kind === 'file') {
       return isSecretPath(action.path) ? [`${basename(action.path)} é arquivo de segredo. Leia o .env.example para saber as variáveis; peça ao usuário se precisar de um valor.`] : []

@@ -15,6 +15,7 @@ export default {
   reason: 'Trabalho não commitado descartado não volta: nem o reflog o guarda.',
   points: ['agent-hook'],
   defaultMode: 'block',
+  // Stryker disable all: a prova é o teste da regra — mutar um caso dela é mutar o teste (um "allows" trocado por vazio passa por construção)
   proof: {
     catches: [
       { command: 'git reset --hard HEAD~1' },
@@ -33,6 +34,7 @@ export default {
       { command: "cat > notas.md <<'EOF'\nnunca rode git reset --hard\nEOF" },
     ],
   },
+  // Stryker restore all
   evaluate(action) {
     if (action.kind !== 'shell') return []
     return parseShell(action.command, action.shell)

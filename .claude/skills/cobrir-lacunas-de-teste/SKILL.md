@@ -64,7 +64,11 @@ novo, agora pega, é o critério de pronto.
    sobrevivente pede, nesta ordem: um teste que o mate; simplificar o código; só então
    `// Stryker disable next-line <operador>: <motivo>` — sem motivo, o `planejar` recusa.
    O alvo `harness` muta os arquivos no lugar — inclusive os hooks que esta sessão usa: rode-o
-   em primeiro plano e não rode outro comando até ele terminar e devolver os originais.
+   em primeiro plano e não rode outro comando até ele terminar e devolver os originais. **Não
+   corte a corrida** (`timeout`, limite da ferramenta): o corte deixa o arquivo instrumentado no
+   lugar, e o `rodar` seguinte recusa até você devolvê-lo do `.stryker-tmp/backup-*` e apagar a
+   pasta. Uma corrida por vez (`concurrency: 1`) leva perto de 20 s por mutante: a fatia que não
+   cabe no tempo que você tem roda no CI.
 3. **Desenhe o teste de cada lacuna:** o nível, a invariante que a sabotagem sobrevivente
    mostra, a fixture com os valores em disputa diferentes.
 4. **Escreva os testes.**

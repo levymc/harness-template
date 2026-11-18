@@ -8,6 +8,7 @@ export default {
   reason: 'Migration em banco não-local muda produção sem revisão humana.',
   points: ['agent-hook'],
   defaultMode: 'block',
+  // Stryker disable all: a prova é o teste da regra — mutar um caso dela é mutar o teste (um "allows" trocado por vazio passa por construção)
   proof: {
     catches: [
       { command: 'node scripts/db/migrate.mjs up --remote' },
@@ -20,6 +21,7 @@ export default {
       { command: 'git commit -m "migrate.mjs: documenta o --remote"' },
     ],
   },
+  // Stryker restore all
   evaluate(action) {
     if (action.kind !== 'shell') return []
     return parseShell(action.command, action.shell)

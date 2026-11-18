@@ -31,6 +31,7 @@ export default {
   reason: 'O merge e a decisão sobre a barra são de uma pessoa; o agente que se autoriza anula a barra.',
   points: ['agent-hook'],
   defaultMode: 'block',
+  // Stryker disable all: a prova é o teste da regra — mutar um caso dela é mutar o teste (um "allows" trocado por vazio passa por construção)
   proof: {
     catches: [
       { command: 'gh pr merge 12 --squash' },
@@ -52,6 +53,7 @@ export default {
       { command: 'git merge origin/main' },
     ],
   },
+  // Stryker restore all
   evaluate(action) {
     if (action.kind !== 'shell') return []
     const found = parseShell(action.command, action.shell).map(motivo).filter(Boolean)

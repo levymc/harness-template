@@ -28,6 +28,7 @@ export default {
   reason: 'Push forçado reescreve o histórico remoto e pode apagar trabalho de outra pessoa.',
   points: ['agent-hook'],
   defaultMode: 'block',
+  // Stryker disable all: a prova é o teste da regra — mutar um caso dela é mutar o teste (um "allows" trocado por vazio passa por construção)
   proof: {
     catches: [
       { command: 'git push --force origin feat/x' },
@@ -50,6 +51,7 @@ export default {
       { command: 'git push -o ci.skip origin feat/x' },
     ],
   },
+  // Stryker restore all
   evaluate(action) {
     if (action.kind !== 'shell') return []
     const found = []

@@ -9,6 +9,7 @@ export default {
   reason: 'Branch protegida só recebe mudança por PR, com revisão; commit ou push direto pula a revisão.',
   points: ['agent-hook'],
   defaultMode: 'block',
+  // Stryker disable all: a prova é o teste da regra — mutar um caso dela é mutar o teste (um "allows" trocado por vazio passa por construção)
   proof: {
     catches: [
       { branch: 'main', command: 'git commit -m x' },
@@ -27,6 +28,7 @@ export default {
       { command: 'git push origin HEAD' },
     ],
   },
+  // Stryker restore all
   evaluate(action, config) {
     if (action.kind !== 'shell') return []
     const protegidas = config?.protectedBranches ?? ['main', 'master']
