@@ -103,6 +103,12 @@ describe('skill-frontmatter', () => {
   it('pega name diferente da pasta', () => {
     assert.match(erros(repo({ '.claude/skills/x/SKILL.md': '---\nname: y\ndescription: uma descrição longa o suficiente para valer aqui\n---\n' }), 'skill-frontmatter')[0], /≠ pasta/)
   })
+  const skill = descricao => ({ '.claude/skills/x/SKILL.md': `---\nname: x\ndescription: ${descricao}\n---\n` })
+  it('pega description acima de 280 caracteres e sem "Use quando"; aceita a que cumpre', () => {
+    assert.match(erros(repo(skill(`${'a'.repeat(280)} Use quando x.`)), 'skill-frontmatter')[0], /teto 280/)
+    assert.match(erros(repo(skill('Faz uma coisa útil, descrita com folga, mas sem dizer o gatilho.')), 'skill-frontmatter')[0], /sem "Use quando"/)
+    assert.deepEqual(erros(repo(skill('Faz uma coisa útil, descrita com folga. Use quando precisar dela.')), 'skill-frontmatter'), [])
+  })
   it('ignora cópia de SKILL.md em pasta que o git ignora (workspace de eval)', () => {
     const copia = { '.gitignore': '.claude/skills/*-workspace/\n', '.claude/skills/x-workspace/snap/SKILL.md': '# cópia\n' }
     assert.deepEqual(erros(repo(copia), 'skill-frontmatter'), [])
@@ -126,7 +132,7 @@ describe('skill-frontmatter com escalar de bloco', () => {
   // lia a description como "|-" e acusava "curta" numa skill válida.
   const skill = desc => ({ '.claude/skills/bloco/SKILL.md': `---\nname: bloco\ndescription: ${desc}\nlicense: MIT\n---\n\nCorpo.\n` })
   it('aceita description em bloco longa o bastante', () => {
-    assert.deepEqual(erros(repo(skill('|-\n  Primeira linha da descrição da skill,\n  e a segunda linha completa o sentido.')), 'skill-frontmatter'), [])
+    assert.deepEqual(erros(repo(skill('|-\n  Primeira linha da descrição da skill,\n  e a segunda completa. Use quando o teste pedir.')), 'skill-frontmatter'), [])
   })
   it('continua pegando description em bloco curta demais', () => {
     assert.match(erros(repo(skill('>\n  curta')), 'skill-frontmatter')[0], /curta/)
@@ -297,6 +303,11 @@ describe('work-tasks', () => {
     const e = erros(repo({ 'work/a/task.json': JSON.stringify({ objetivo: 'o', criterios: [{ descricao: 'd' }] }) }), 'work-tasks').join()
     assert.match(e, /passa:boolean/)
     assert.match(e, /sem PROGRESS/)
+  })
+  it('pega critério passa:true sem evidência citada no PROGRESS; aceita com ela', () => {
+    const feita = JSON.stringify({ objetivo: 'o', criterios: [{ descricao: 'd', passa: false }, { descricao: 'e', passa: true }] })
+    assert.match(erros(repo({ 'work/a/task.json': feita, 'work/a/PROGRESS.md': '### hoje\n- feito: e\n' }), 'work-tasks')[0], /critério 2 marcado passa:true sem/)
+    assert.deepEqual(erros(repo({ 'work/a/task.json': feita, 'work/a/PROGRESS.md': '- evidência (critério 2): pnpm test verde\n' }), 'work-tasks'), [])
   })
   it('pega teto de tarefas abertas', () => {
     const extra = {}

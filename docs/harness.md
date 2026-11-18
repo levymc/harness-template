@@ -25,11 +25,14 @@ que descrevia um código que já tinha mudado. Daí três princípios:
 | `harness.config.json` | tetos, termos proibidos (por hash), branches protegidas, e o manifesto da camada para adoção |
 | `.claude/hooks/` | o que tem de acontecer sempre, sem depender do agente lembrar |
 | `.claude/skills/` | procedimentos, carregados só quando o assunto aparece |
-| `.claude/agents/` | três subagentes de escopo estreito, `tools:` explícito |
+| `.claude/agents/` | subagentes de escopo estreito, `tools:` explícito; o `revisor-frio` revisa sem a conversa de quem escreveu |
 | `scripts/harness/check-claims.mjs` | o repositório não afirma sobre si o que não é verdade |
+| `scripts/harness/rules/` | o motor das regras de ação do agente, cada uma com prova (ADR 0006, `docs/regras.md`) |
 | `scripts/harness/memory.mjs` | índice, lint, verificação e criação de fatos |
 | `scripts/harness/adopt.mjs` | leva a camada de harness a um repositório existente |
-| `scripts/harness/prove.mjs` | aplica uma regressão de propósito, roda a verificação e reverte: "prove que pega" executável |
+| `scripts/harness/prove.mjs` | aplica uma regressão de propósito (ou uma lista), confere que a verificação estava verde antes, roda e reverte: "prove que pega" executável |
+| `scripts/harness/falhas.mjs` · `revisao-fria.mjs` · `recorte.mjs` | o laço que para na segunda falha igual, o pedido da revisão fria, o recorte da entrega (skills `validar-antes-de-concluir` e `cobrir-lacunas-de-teste`) |
+| `scripts/harness/suite.mjs` | roda a suíte do harness com a Temp numa pasta vazia (sobra reprova) e teto de RAM |
 | `scripts/harness/test/` | o harness testado como código, nos dois sentidos |
 | `docs/guardrails.md` | toda proibição, com sensor, origem e condição de expiração |
 | `docs/memory/` · `docs/decisions/` · `work/` | memória semântica, decisões, trabalho em andamento |

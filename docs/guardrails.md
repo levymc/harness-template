@@ -32,4 +32,9 @@ vira peso morto que ninguém ousa remover.
 | Apagar recursivamente fora dos diretórios gerados | destrói fonte que talvez não esteja no git | `rule:no-recursive-delete` | `rm -rf` só em prosa nos projetos de origem | nunca |
 | Regra do motor sem prova, ou que deixou de pegar o que dizia | guarda que nunca foi vista falhar não protege; guarda que barra tudo é desligada | `check-claims:rule-proofs` | ADR 0006 | nunca |
 | Concluir "pronto" sem dizer o que não foi verificado | passo pulado em silêncio parece aprovação | revisão | recorrente | nunca |
+| Marcar critério de tarefa como passa:true sem evidência citada | sessão futura conclui que acabou sem ninguém ter visto passar | `check-claims:work-tasks` | lacuna vista ao comparar com o harness de referência | nunca |
+| Terceira tentativa com a mesma hipótese depois de duas falhas iguais | gasta tempo e empurra o agente a afrouxar o teste | `scripts/harness/falhas.mjs` | harness de referência | se a skill validar-antes-de-concluir sair do harness |
+| Concluir sem revisão de quem não escreveu a mudança | quem escreveu defende o próprio diff | revisão | harness de referência | nunca |
+| Description de skill acima de 280 caracteres ou sem "Use quando" | entra no contexto de toda sessão; sem gatilho, a skill não dispara na hora certa | `check-claims:skill-frontmatter` | harness de referência | se o Claude Code deixar de carregar as descriptions em toda sessão |
+| Suíte do harness que deixa sobra na Temp | a mutação e o prove.mjs rodam a suíte a cada troca e enchem a máquina | `scripts/harness/suite.mjs` | harness de referência (223 mil itens na Temp) | nunca |
 | Contornar um bloqueio de hook por outro caminho | anula a guarda e esconde o motivo | revisão | — | nunca |

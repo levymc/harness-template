@@ -14,6 +14,11 @@ export function subjectOf(message) {
   return (message ?? '').split(/\r?\n/).map(line => line.trimEnd()).find(line => line.trim() && !line.startsWith('#')) ?? ''
 }
 
+/** O tipo (`feat`, `fix`…) pelo cabeçalho; `null` fora do padrão ou em mensagem gerada. */
+export function commitTypeOf(message) {
+  return HEADER.exec(subjectOf(message))?.[1] ?? null
+}
+
 /** @returns {string[]} os problemas da mensagem; vazio quando está no padrão */
 export function messageProblems(message, types = DEFAULT_TYPES) {
   const subject = subjectOf(message)

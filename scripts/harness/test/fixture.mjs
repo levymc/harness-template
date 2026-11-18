@@ -39,7 +39,7 @@ const BASE = {
     hooks: { Stop: [{ hooks: [{ type: 'command', command: 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/h.mjs"' }] }] },
   }, null, 2),
   '.claude/hooks/h.mjs': '',
-  '.claude/skills/ok/SKILL.md': '---\nname: ok\ndescription: Uma skill válida com descrição longa o bastante para disparar.\n---\n\nCorpo.\n',
+  '.claude/skills/ok/SKILL.md': '---\nname: ok\ndescription: Uma skill válida com descrição longa o bastante. Use quando o teste pedir.\n---\n\nCorpo.\n',
   '.claude/agents/ok.md': '---\nname: ok\ndescription: agente válido\ntools: Read, Grep\n---\n\nCorpo.\n',
   'docs/guardrails.md': '| Nunca | Por quê | Sensor | Origem | Expira quando |\n|---|---|---|---|---|\n| sync | schema | `check-claims:no-sync` | x | nunca |\n| julgar | x | revisão | x | nunca |\n',
   'docs/regras.md': `# Regras\n\n${CATALOG.map(rule => `## ${rule.id}\n\n${rule.reason}\n`).join('\n')}`,

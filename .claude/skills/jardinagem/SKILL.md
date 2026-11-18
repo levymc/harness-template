@@ -1,6 +1,6 @@
 ---
 name: jardinagem
-description: Revisão periódica do harness — fatos de memória suspeitos, tetos perto do limite, skills e agentes sem uso, guardas cuja condição de expiração já valeu, tarefas abandonadas em work/. Use quando o usuário pedir uma revisão do harness, a cada poucas semanas, ou quando o SessionStart mostrar muitos suspeitos.
+description: 'Revisão periódica do harness: fatos suspeitos, tetos perto do limite, skills e agentes sem uso, guardas expiradas, tarefas paradas em work/. Use quando o usuário pedir revisão do harness, a cada poucas semanas, ou com muitos suspeitos no SessionStart.'
 ---
 
 # Jardinagem do harness

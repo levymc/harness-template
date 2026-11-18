@@ -12,3 +12,12 @@
 - decisão: `--force-with-lease` continua passando (comportamento do template, com teste), diferente da referência.
 - evidência (critério 1): `pnpm check` exit 0 — harness:test 137/137, `✓ 19 regras conferidas`. prove.mjs vermelho em: tirar o desembrulho do `bash -c` (rule-proofs), trocar exit 2→0 no erro do guarda (hooks.test), tirar a distinção rm×rd do alvo `/x` (rule-proofs, depois de acrescentar o caso que faltava — a primeira prova ficou verde e mostrou o buraco).
 - próximo passo: fatia 2 (validar-antes-de-concluir, falhas, revisão fria).
+
+### 2026-11-18 — fatia 2: validar antes de concluir
+- feito: skills `validar-antes-de-concluir` (+ lente funcionalidade-nativa), `cobrir-lacunas-de-teste`, `testes-agenticos`; agente `revisor-frio`; scripts `falhas.mjs`, `revisao-fria.mjs`, `recorte.mjs`, `suite.mjs`, `teto-de-memoria.mjs`; `fechar-tarefa`, `iniciar-tarefa` e `pre-push` ligadas à validação; 7 descriptions de skill reescritas (≤280, "Use quando").
+- decisão: a `sabotar.mjs` da referência NÃO entrou como ferramenta nova — os cuidados dela (verificação verde antes, trecho único, recuperação de corrida cortada, CRLF, lista, tempo limite) foram para o `prove.mjs`, que já fazia o mesmo. Achado: o `prove.mjs` antigo "provava" qualquer coisa com a suíte já vermelha.
+- decisão: o temp-limpo da referência rodava a suíte duas vezes; aqui o próprio `harness:test` roda por `suite.mjs` com Temp vazia e conta a sobra — mesmo efeito, sem custo de tempo.
+- decisão: pedido da revisão fria e tentativas ficam em `.harness/` (gitignored); o diff ao revisor exclui `work/` e `.harness/` (o PROGRESS é raciocínio de quem escreveu).
+- achado: a regra `script-flag` pegou os dois scripts novos (flag montado por concatenação não aparece literal) — consertado nos scripts, não na regra.
+- evidência (critério 2): `pnpm check` exit 0 — harness:test 164/164 pela suite.mjs, sem sobra na Temp; `✓ 19 regras conferidas`. `prove.mjs --lista` com 7 sabotagens (verificação verde antes, evidência do work-tasks, "Use quando", teto 280, sobras da suíte, exclusão de work/ do diff, limite do falhas) → as 7 PEGAS.
+- próximo passo: fatia 3 (mutação no CI).

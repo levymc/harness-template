@@ -14,7 +14,11 @@ guardas, a memória e as lições que viram checagem. O porquê de cada peça es
   `scripts/harness/rules/` (ADR 0006, `docs/regras.md`).
 - `scripts/harness/check-claims.mjs`: as regras, cada uma com id; `--list` mostra todas.
 - `scripts/harness/memory.mjs`: índice, lint, verificação e criação de fatos.
-- `scripts/harness/prove.mjs`: aplica uma regressão de propósito e confirma o vermelho.
+- `scripts/harness/prove.mjs`: aplica uma regressão de propósito (ou uma lista) e confirma o
+  vermelho; recusa se a verificação já estava vermelha antes.
+- `scripts/harness/falhas.mjs`, `revisao-fria.mjs`, `recorte.mjs`: as peças da validação antes
+  do "pronto" e da cobertura de lacunas.
+- `scripts/harness/suite.mjs` e `teto-de-memoria.mjs`: a suíte com Temp limpa e teto de RAM.
 - `scripts/harness/adopt.mjs` e `scripts/harness/templates/`: a adoção em outro repo.
 - `scripts/harness/test/`: a suíte do próprio harness, com fixture de repositório.
 - `harness.config.json`: tetos, termos proibidos e o manifesto da camada.

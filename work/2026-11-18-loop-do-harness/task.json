@@ -8,7 +8,7 @@
     },
     {
       "descricao": "Fatia 2: skill validar-antes-de-concluir, falhas.mjs (sai 3 na 2a falha igual), revisao-fria.mjs + agente revisor-frio, skills cobrir-lacunas-de-teste e testes-agenticos; work-tasks exige evidência no PROGRESS para passa:true; skill-frontmatter exige no máximo 280 caracteres e 'Use quando'",
-      "passa": false
+      "passa": true
     },
     {
       "descricao": "Fatia 3: stryker.config.json, scripts/harness/mutacao.mjs planejar|rodar só nas linhas adicionadas, workflow mutacao.yml, script pnpm mutation",

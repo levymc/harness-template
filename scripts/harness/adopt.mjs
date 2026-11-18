@@ -101,7 +101,7 @@ function scriptsParaPackageJson(dest) {
   const pkg = JSON.parse(readFileSync(file, 'utf8'))
   const desejados = {
     'harness:check': 'node scripts/harness/check-claims.mjs',
-    'harness:test': 'node --test "scripts/harness/test/*.test.mjs"',
+    'harness:test': 'node scripts/harness/suite.mjs',
     memory: 'node scripts/harness/memory.mjs',
     skills: 'node scripts/harness/skills.mjs',
   }

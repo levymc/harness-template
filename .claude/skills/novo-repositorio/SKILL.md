@@ -1,6 +1,6 @@
 ---
 name: novo-repositorio
-description: A partir deste template, cria um repositório novo no GitHub (público ou privado, na conta ou organização do usuário) já com o harness e o objetivo do projeto, ou leva o harness a um repositório que já existe e ainda não tem. Use quando o usuário pedir para iniciar, criar ou montar outro repositório com base no harness-template, ou para colocar o harness num repositório existente (URL ou pasta).
+description: 'Cria, a partir deste template, um repositório novo no GitHub já com o harness e o objetivo do projeto, ou leva o harness a um repositório existente. Use quando o usuário pedir para iniciar ou montar outro repositório com base no harness-template, ou pôr o harness num existente.'
 ---
 
 # Novo repositório a partir do template
