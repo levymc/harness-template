@@ -57,3 +57,12 @@
 - evidência (critério 6): `check-claims --only html-stats` verde; prove.mjs com 3 sabotagens (contagem velha, regra trocada na tabela, comparação desligada) → as 3 PEGAS; README e harness.md atualizados; adopt.test verde (layer leva docs/regras.md; mutação fica no layerExclude).
 - evidência (critério 7): gate inteiro na mesma rodada — `pnpm check` exit 0 (lint, typecheck, test 4/4, harness:check 20 regras, harness:test 216/216), `pnpm build` exit 0, `pnpm db:migrate` + `pnpm test:e2e` 4/4 (com .env do .env.example); `memory verify` sem suspeito; toda guarda nova provada com prove.mjs nas fatias 1–6.
 - próximo passo: revisão fria (revisor-frio) e fechamento.
+
+### 2026-11-18 — revisão fria, rodada 1: 10 achados, todos tratados
+- 1 (bloqueia) wrappers `timeout`/`stdbuf`/`find -exec`: parser desembrulha; casos nas provas.
+- 2 (bloqueia) `eval`, `| bash`, `iex`: parser desembrulha o eval; regra nova `no-hidden-command` barra shell lendo da entrada e Invoke-Expression.
+- 3 (bloqueia) fail-closed não cobria erro de import: guardas importam só o `_io.mjs` (agora autossuficiente) e carregam o motor por import() dentro do runHook; teste com erro de sintaxe numa regra copiada. Achado durante o conserto: um heredoc deixou o próprio `_io.mjs` com erro de sintaxe por alguns comandos — todos os hooks saíram com 1 (passa) nesse intervalo, só comandos de leitura rodaram. Prova viva do achado.
+- 4 (bloqueia) aprovação/merge pela API: `no-merge-by-agent` pega `…/reviews -f event=APPROVE` e as mutações GraphQL.
+- 5 (bloqueia) barra sem sensor no repo adotado: `.github/workflows/fluxo.yml` entra no layer.
+- 6 `+refspec` com lease agora barra; 7 `git push origin HEAD` na main barra; 8 reconferir depois de aprovar documentado; 9 ADR 0006 corrigida; 10 `git commit -uno` passa.
+- evidência: `pnpm check` exit 0, harness:test 217/217, `rule-proofs` com os casos novos; o check pegou duas afirmações minhas no conserto (caminho de exemplo, contagem da página 10→11).

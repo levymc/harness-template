@@ -42,7 +42,7 @@ escrita em `.claude/hooks/`, `scripts/harness/` e `harness.config.json` continua
 - **Fail-closed sem porta** (como na referência) — um bug no motor impediria o próprio
   agente de consertá-lo; o usuário teria de editar à mão. A porta custa três prefixos.
 - **Motor em camadas (domain/engines/services/delivery)** como na referência — o template
-  tem nove regras de ação; as camadas esconderiam mais do que organizam. Uma pasta plana
+  tem uma dúzia de regras de ação; as camadas esconderiam mais do que organizam. Uma pasta plana
   com o contrato no `engine.mjs` basta; revisitar se o catálogo crescer muito.
 
 ## Consequências

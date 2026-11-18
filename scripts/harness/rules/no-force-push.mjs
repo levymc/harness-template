@@ -8,15 +8,16 @@ import { gitInvocation, parseShell } from './shell.mjs'
 const WITH_VALUE = new Set(['-o', '--push-option', '--repo', '--receive-pack', '--exec'])
 
 function forcedFlag(args) {
-  if (args.some(arg => arg.startsWith('--force-with-lease'))) return null
+  const lease = args.some(arg => arg.startsWith('--force-with-lease'))
   for (let i = 0; i < args.length; i++) {
     const arg = args[i]
     if (WITH_VALUE.has(arg)) {
       i++
       continue
     }
-    if (arg === '--force' || arg === '--mirror' || arg === '--force-if-includes') return arg
-    if (/^-[a-zA-Z]*f[a-zA-Z]*$/.test(arg)) return '-f'
+    if (arg === '--mirror') return arg
+    if (!lease && (arg === '--force' || arg === '--force-if-includes')) return arg
+    if (!lease && /^-[a-zA-Z]*f[a-zA-Z]*$/.test(arg)) return '-f'
     if (!arg.startsWith('-') && arg.startsWith('+')) return `refspec ${arg}`
   }
   return null
@@ -37,6 +38,9 @@ export default {
       { command: 'git fetch && git push --mirror origin' },
       { command: 'bash -c "git push -f origin x"' },
       { command: 'echo $(git push --force)' },
+      { command: 'timeout 60 git push --force' },
+      { command: 'eval "git push --force"' },
+      { command: 'git push --force-with-lease=main origin +feat/x' },
       { shell: 'powershell', command: 'git push --force origin feat/x' },
     ],
     allows: [

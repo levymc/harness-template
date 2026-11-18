@@ -16,7 +16,13 @@ function motivo(command) {
   const [grupo, acao, ...resto] = command.args.map(w => w.value)
   if (grupo === 'pr' && acao === 'merge') return 'merge de PR é decisão de uma pessoa, não do agente.'
   if (grupo === 'pr' && acao === 'review' && resto.some(a => a === '--approve' || a === '-a')) return 'aprovar PR é decisão de quem não o escreveu, não do agente.'
-  if (grupo === 'api' && resto.some(a => /\/merge\b/.test(a)) && command.args.some(w => /^(?:-X|--method)$/.test(w.value))) return 'merge de PR pela API é decisão de uma pessoa, não do agente.'
+  if (grupo === 'api') {
+    const tudo = [acao, ...resto].join(' ')
+    // Revisão fria: aprovar por REST (`…/reviews -f event=APPROVE`) e merge/aprovação por GraphQL passavam.
+    if (/\/merge\b/.test(tudo) && command.args.some(w => /^(?:-X|--method)$/.test(w.value))) return 'merge de PR pela API é decisão de uma pessoa, não do agente.'
+    if (/\/reviews\b/.test(tudo) && /event=APPROVE/i.test(tudo)) return 'aprovar PR pela API é decisão de quem não o escreveu, não do agente.'
+    if (/mergePullRequest|enablePullRequestAutoMerge|addPullRequestReview|submitPullRequestReview/.test(tudo)) return 'merge ou aprovação pela API GraphQL é decisão de uma pessoa, não do agente.'
+  }
   return null
 }
 
@@ -32,11 +38,15 @@ export default {
       { command: 'gh pr comment 12 --body "**Autorização do merge:** ok"' },
       { command: 'gh api -X PUT repos/o/r/pulls/12/merge' },
       { command: 'bash -c "gh pr merge 12"' },
+      { command: 'gh api repos/o/r/pulls/12/reviews -f event=APPROVE' },
+      { command: "gh api graphql -f query='mutation { mergePullRequest(input: {pullRequestId: \"x\"}) { clientMutationId } }'" },
+      { command: 'timeout 30 gh pr merge 12' },
     ],
     allows: [
       { command: 'gh pr create --draft --title x --body-file .harness/pr.md' },
       { command: 'gh pr review 12 --comment --body "achados"' },
       { command: 'gh pr view 12' },
+      { command: 'gh api repos/o/r/pulls/12/reviews' },
       { command: 'git merge origin/main' },
     ],
   },

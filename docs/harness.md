@@ -108,6 +108,10 @@ O harness melhora pelo que o atrapalhou, num ciclo com prova em cada passo (ADR 
    workflow `fluxo`, que roda o conferidor da `main` (o PR não troca quem o julga). O agente
    nunca aprova, faz merge ou escreve a autorização (regra `no-merge-by-agent`).
 
+Depois de uma revisão aprovada, o status é reconferido por um comentário qualquer no PR ou
+rodando o workflow `fluxo` à mão — a aprovação sozinha não dispara o workflow, de propósito (o
+evento de revisão rodaria o workflow da branch do PR).
+
 Limites assumidos: a frase reescrita que afrouxa o sentido mantendo o termo não é acusada — fica
 para a revisão fria e para quem lê; e exigir o status `conferidor do fluxo` na proteção da
 `main` é configuração do dono do repositório, que nenhum arquivo daqui garante.

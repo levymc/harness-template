@@ -83,7 +83,8 @@
     "docs/evals/README.md",
     "skills-lock.json",
     "scripts/harness",
-    "work/.gitkeep"
+    "work/.gitkeep",
+    ".github/workflows/fluxo.yml"
   ],
   "layerExclude": [
     ".claude/skills/novo-modulo",

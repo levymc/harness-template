@@ -274,10 +274,30 @@ function unwrap(raw, shell) {
       }
       continue
     }
+    // Wrappers com argumento posicional antes do programa (revisão fria: `timeout 60 git push
+    // --force` e `stdbuf -o0 git reset --hard` passavam).
+    if (name === 'timeout' || name === 'stdbuf' || name === 'ionice' || name === 'chrt' || name === 'taskset' || name === 'setsid' || name === 'unbuffer') {
+      words = words.slice(1)
+      while (words[0]?.value.startsWith('-')) words = words.slice(['-s', '-k', '--signal', '--kill-after', '-c', '-n', '-p'].includes(words[0].value) ? 2 : 1)
+      if (['timeout', 'chrt', 'taskset'].includes(name) && words[0] && !words[0].value.startsWith('-')) words = words.slice(1)
+      continue
+    }
     break
   }
   const program = programName(words[0].value)
   const args = words.slice(1)
+  // `eval "…"` roda o texto como comando.
+  if (program === 'eval') return parseShell(args.map(w => w.value).join(' '), shell)
+  // `find … -exec cmd {} +` roda cmd para cada arquivo.
+  if (program === 'find') {
+    const execs = []
+    for (let i = 0; i < args.length; i++) {
+      if (!/^-(?:exec|execdir|ok|okdir)$/.test(args[i].value)) continue
+      const fim = args.findIndex((w, j) => j > i && (w.value === ';' || w.value === '+'))
+      execs.push(args.slice(i + 1, fim === -1 ? args.length : fim).map(w => w.value).join(' '))
+    }
+    if (execs.length) return [{ program, words, args, env, redirects: raw.redirects, fromStdin, shell }, ...execs.flatMap(e => parseShell(e, 'bash'))]
+  }
   if (SHELLS_BASH.has(program)) {
     const at = args.findIndex(w => /^-[a-z]*c[a-z]*$/.test(w.value))
     if (at > -1 && args[at + 1]) return parseShell(args[at + 1].value, 'bash')

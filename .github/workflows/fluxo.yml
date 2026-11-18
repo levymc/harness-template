@@ -4,7 +4,11 @@
 #
 # Roda SEMPRE o código da main: pull_request_target e issue_comment usam o workflow da branch
 # padrão, e o checkout é da main — o PR não troca quem o julga. Nunca faça checkout do código do PR
-# aqui: este job tem token com escrita de status. Exigir o status "conferidor do fluxo" na proteção
+# aqui: este job tem token com escrita de status.
+#
+# Revisão aprovada não dispara este workflow (pull_request_review rodaria o workflow da branch do
+# PR). Depois de aprovar, reconfira com um comentário qualquer no PR, ou rodando o workflow à mão
+# (workflow_dispatch, com o número do PR). Exigir o status "conferidor do fluxo" na proteção
 # da main é configuração do dono do repositório. Ver ADR 0007.
 name: fluxo
 

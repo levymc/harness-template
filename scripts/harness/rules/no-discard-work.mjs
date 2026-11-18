@@ -23,6 +23,7 @@ export default {
       { command: 'git checkout -- .' },
       { command: 'git restore .' },
       { command: 'bash -c "git reset --hard"' },
+      { command: 'stdbuf -o0 git reset --hard' },
     ],
     allows: [
       { command: 'git reset --soft HEAD~1' },

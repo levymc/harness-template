@@ -4,6 +4,16 @@
  */
 import { gitInvocation, parseShell } from './shell.mjs'
 
+/** No grupo de flags curtas, para nas que levam valor colado: `-uno` é -u no, não -n (revisão fria). */
+function temN(arg) {
+  if (!/^-[a-zA-Z]+$/.test(arg)) return false
+  for (const c of arg.slice(1)) {
+    if (c === 'n') return true
+    if ('umcCFtS'.includes(c)) return false
+  }
+  return false
+}
+
 export default {
   id: 'no-verify-bypass',
   reason: 'Pular os hooks do git esconde o problema que eles apontaram em vez de consertá-lo.',
@@ -20,6 +30,7 @@ export default {
     allows: [
       { command: 'git commit -m "documenta por que nunca usar --no-verify"' },
       { command: 'git commit -am x' },
+      { command: 'git commit -uno -m x' },
       { command: 'git push -n origin feat/x' },
     ],
   },
@@ -29,7 +40,7 @@ export default {
     for (const command of parseShell(action.command, action.shell)) {
       const git = gitInvocation(command)
       if (git?.sub !== 'commit' && git?.sub !== 'push') continue
-      const pula = git.args.includes('--no-verify') || (git.sub === 'commit' && git.args.some(a => /^-[a-zA-Z]*n[a-zA-Z]*$/.test(a)))
+      const pula = git.args.includes('--no-verify') || (git.sub === 'commit' && git.args.some(temN))
       if (pula) found.push('--no-verify pula os hooks do git. Conserte o que o hook reclamou.')
     }
     return found

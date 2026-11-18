@@ -6,7 +6,7 @@
 import assert from 'node:assert/strict'
 import { resolve } from 'node:path'
 import { after, describe, it } from 'node:test'
-import { cleanup, git, makeRepo, run, TERMO, write } from './fixture.mjs'
+import { cleanup, git, makeRepo, run, TEMPLATE, TERMO, write } from './fixture.mjs'
 
 const repos = []
 function repo({ commit = true, branch } = {}) {
@@ -158,6 +158,22 @@ describe('fail-closed (ADR 0006)', () => {
     assert.equal(file('Write', { file_path: `${root}/harness.config.json`, content: '{}' }).code, 0)
     assert.equal(file('Edit', { file_path: `${root}/scripts/harness/rules/x.mjs`, new_string: 'x' }).code, 0)
     assert.equal(file('Write', { file_path: `${root}/scripts/harness/.env`, content: 'x' }).code, 2)
+  })
+  // Revisão fria: com o motor importado no topo do guarda, erro de sintaxe numa regra derrubava
+  // o processo com exit 1 antes do runHook — e o Claude Code trata exit 1 como "deixa passar".
+  it('erro de sintaxe numa regra também barra (o motor é importado dentro do runHook)', async () => {
+    const { cpSync, writeFileSync } = await import('node:fs')
+    const root = repo({ branch: 'feat/x' })
+    cpSync(resolve(TEMPLATE, '.claude/hooks'), resolve(root, '.claude/hooks'), { recursive: true })
+    cpSync(resolve(TEMPLATE, 'scripts/harness'), resolve(root, 'scripts/harness'), { recursive: true })
+    writeFileSync(resolve(root, 'scripts/harness/rules/no-force-push.mjs'), 'export default {{ quebrado\n')
+    const { spawnSync } = await import('node:child_process')
+    const roda = (hook, input) => spawnSync(process.execPath, [resolve(root, '.claude/hooks', hook)], { cwd: root, input: JSON.stringify(input), encoding: 'utf8', env: { ...process.env, HARNESS_ROOT: root } })
+    const bash = roda('bash-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'git status' }, cwd: root })
+    assert.equal(bash.status, 2, bash.stderr)
+    assert.match(bash.stderr, /barrando por segurança/)
+    assert.equal(roda('file-guard.mjs', { tool_name: 'Write', tool_input: { file_path: `${root}/src/a.ts`, content: 'x' } }).status, 2)
+    assert.equal(roda('file-guard.mjs', { tool_name: 'Edit', tool_input: { file_path: `${root}/scripts/harness/rules/no-force-push.mjs`, new_string: 'x' } }).status, 0)
   })
   it('hook informativo continua fail-open', async () => {
     const r = run('.claude/hooks/stop-check.mjs', { root: await quebrado(), input: { stop_hook_active: false } })

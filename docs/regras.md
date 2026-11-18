@@ -14,6 +14,13 @@ Termo de `forbiddenTerms` no comando (mensagem de commit inclusive) ou na escrit
 repositório. O termo é guardado como hash. **O que fazer:** reescreva sem o termo; se o termo
 precisa mesmo aparecer, a decisão é do dono do repositório.
 
+## no-hidden-command
+
+Shell que lê os comandos da entrada (`echo "…" | bash`, `curl … | sh`) e `Invoke-Expression`/`iex`:
+o que roda ali só existe na hora, e nenhuma outra regra o vê. **O que fazer:** rode o comando
+direto, ou um script versionado (`bash scripts/<nome>.sh`). `bash -c`, `eval` e `$(…)` o parser
+desembrulha, e as outras regras julgam o conteúdo.
+
 ## no-secret-access
 
 Ler, escrever ou citar no comando `.env*`, chave (`.pem`, `.key`, `id_rsa`) ou

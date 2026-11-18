@@ -13,8 +13,20 @@
  *     quebra barra — e o `onError` dele abre só a porta para consertar o próprio guarda.
  */
 import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-export { isMain } from '../../scripts/harness/lib.mjs'
+/**
+ * Este arquivo não importa nada do harness: é o que os guardas carregam ANTES do motor, para
+ * que um erro de import ou de sintaxe numa regra caia no try do runHook e barre (fail-closed),
+ * em vez de derrubar o processo com exit 1 — que o Claude Code trata como "deixa passar".
+ * Visto pela revisão fria: com o import no topo do guarda, a regra quebrada deixava tudo passar.
+ */
+export function isMain(meta) {
+  if (!process.argv[1]) return false
+  const norm = path => resolve(path).replaceAll('\\', '/').toLowerCase()
+  return norm(fileURLToPath(meta.url)) === norm(process.argv[1])
+}
 
 export function readInput() {
   try {

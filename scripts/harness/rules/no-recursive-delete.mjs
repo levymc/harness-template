@@ -38,6 +38,7 @@ export default {
       { command: 'rm -rf /x node_modules' },
       { shell: 'powershell', command: 'cmd /c rd /s /q src' },
       { command: 'bash -c "rm -rf ."' },
+      { command: 'find . -name x -exec rm -rf {} +' },
       { shell: 'powershell', command: 'Remove-Item -Recurse -Force src' },
     ],
     allows: [

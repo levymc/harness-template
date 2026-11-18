@@ -16,12 +16,14 @@ export default {
       { command: 'git push origin HEAD:main' },
       { branch: 'main', command: 'git push' },
       { command: 'bash -c "git push origin master"' },
+      { branch: 'main', command: 'git push origin HEAD' },
     ],
     allows: [
       { command: 'git commit -m "conserta o push to main"' },
       { branch: 'main', hasCommits: false, command: 'git commit -m inicial' },
       { command: 'git push -u origin feat/x' },
       { command: 'git push origin main-legado' },
+      { command: 'git push origin HEAD' },
     ],
   },
   evaluate(action, config) {
@@ -35,7 +37,12 @@ export default {
       }
       if (git?.sub === 'push') {
         const refspecs = git.args.filter(a => !a.startsWith('-')).slice(1)
-        const alvoProtegido = refspecs.some(r => protegidas.includes(r.replace(/^\+/, '').split(':').pop()))
+        // HEAD é a branch atual: `git push origin HEAD` na main é push na main (revisão fria).
+        const destino = r => {
+          const d = r.replace(/^\+/, '').split(':').pop()
+          return d === 'HEAD' ? action.branch : d
+        }
+        const alvoProtegido = refspecs.some(r => protegidas.includes(destino(r)))
         if (alvoProtegido || (!refspecs.length && protegidas.includes(action.branch))) found.push('push direto para branch protegida. Abra um PR.')
       }
     }
