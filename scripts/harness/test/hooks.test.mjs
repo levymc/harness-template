@@ -174,6 +174,9 @@ describe('fail-closed (ADR 0006)', () => {
     assert.match(bash.stderr, /barrando por segurança/)
     assert.equal(roda('file-guard.mjs', { tool_name: 'Write', tool_input: { file_path: `${root}/src/a.ts`, content: 'x' } }).status, 2)
     assert.equal(roda('file-guard.mjs', { tool_name: 'Edit', tool_input: { file_path: `${root}/scripts/harness/rules/no-force-push.mjs`, new_string: 'x' } }).status, 0)
+    // a mensagem de erro manda ler docs/regras.md: a leitura fica liberada; segredo, não
+    assert.equal(roda('file-guard.mjs', { tool_name: 'Read', tool_input: { file_path: `${root}/docs/regras.md` } }).status, 0)
+    assert.equal(roda('file-guard.mjs', { tool_name: 'Read', tool_input: { file_path: `${root}/.env` } }).status, 2)
   })
   it('hook informativo continua fail-open', async () => {
     const r = run('.claude/hooks/stop-check.mjs', { root: await quebrado(), input: { stop_hook_active: false } })

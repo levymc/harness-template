@@ -19,7 +19,7 @@ function motivo(command) {
   if (grupo === 'api') {
     const tudo = [acao, ...resto].join(' ')
     // Revisão fria: aprovar por REST (`…/reviews -f event=APPROVE`) e merge/aprovação por GraphQL passavam.
-    if (/\/merge\b/.test(tudo) && command.args.some(w => /^(?:-X|--method)$/.test(w.value))) return 'merge de PR pela API é decisão de uma pessoa, não do agente.'
+    if (/\/merge\b/.test(tudo) && command.args.some(w => /^(?:-X|--method)(?:=?\w+)?$/.test(w.value))) return 'merge de PR pela API é decisão de uma pessoa, não do agente.'
     if (/\/reviews\b/.test(tudo) && /event=APPROVE/i.test(tudo)) return 'aprovar PR pela API é decisão de quem não o escreveu, não do agente.'
     if (/mergePullRequest|enablePullRequestAutoMerge|addPullRequestReview|submitPullRequestReview/.test(tudo)) return 'merge ou aprovação pela API GraphQL é decisão de uma pessoa, não do agente.'
   }
@@ -41,6 +41,8 @@ export default {
       { command: 'gh api repos/o/r/pulls/12/reviews -f event=APPROVE' },
       { command: "gh api graphql -f query='mutation { mergePullRequest(input: {pullRequestId: \"x\"}) { clientMutationId } }'" },
       { command: 'timeout 30 gh pr merge 12' },
+      { command: 'gh api --method=PUT repos/o/r/pulls/12/merge' },
+      { command: 'gh api -XPUT repos/o/r/pulls/12/merge' },
     ],
     allows: [
       { command: 'gh pr create --draft --title x --body-file .harness/pr.md' },

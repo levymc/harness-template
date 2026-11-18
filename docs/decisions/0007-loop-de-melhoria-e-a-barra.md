@@ -53,7 +53,13 @@ agente roda com o token desse dono e poderia até aprovar o próprio PR.
 - **Limites:** a frase reescrita que afrouxa mantendo o termo não é acusada (revisão fria e quem
   lê); a autorização escrita por arquivo (`--body-file`) não é vista pela regra do motor — o
   conferidor ainda exige a citação literal; exigir o status `conferidor do fluxo` na proteção da
-  `main` é configuração do dono, fora do repositório.
+  `main` é configuração do dono, fora do repositório; o comentário de autorização é aceito de
+  quem tem acesso ao repositório, inclusive o autor do PR — é o caminho do repositório de um dono
+  só. Com uma segunda pessoa revisando, restrinja-o a quem não é o autor (ver "Revisar quando").
+- **Os guardas são o melhor esforço, não a fronteira de segurança.** Duas rodadas de revisão fria
+  acharam 22 formas de contorno (wrapper, `eval`, `xargs`, `| bash`, alias do PowerShell, API do
+  GitHub); as achadas viraram casos na prova das regras. Outras existem: o que importa é que cada
+  uma achada vira caso, e o que segura de verdade é a barra no CI.
 
 ## Revisar quando
 

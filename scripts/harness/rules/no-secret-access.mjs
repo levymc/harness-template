@@ -17,7 +17,8 @@ export function isSecretPath(filePath) {
 /** Programas em que o texto entre aspas é mensagem, não caminho: `git commit -m "tira o .env"`. */
 const QUOTED_IS_DATA = new Set(['git', 'echo', 'printf', 'gh', 'write-output', 'write-host'])
 
-const toca = word => word.value.split('=').some(isSecretPath)
+// `--env-file=.env`, `git show HEAD:.env` e o glob `.env*` (revisão fria) também tocam o segredo.
+const toca = word => word.value.split(/[=:]/).some(p => isSecretPath(p) || (word.glob && /(?:^|[\\/])\.env[*?[]/.test(p)))
 
 function ehSetupDoEnv(command) {
   const [de, para] = command.args.map(w => w.value)
@@ -38,6 +39,8 @@ export default {
       { command: 'bash -c "cat .env.local"' },
       { command: 'cat ~/.ssh/id_rsa' },
       { command: 'echo x > .env' },
+      { command: 'cat .env*' },
+      { command: 'git show HEAD:.env' },
       { shell: 'powershell', command: 'Get-Content .env' },
       { kind: 'file', tool: 'Read', path: '/repo/.env' },
       { kind: 'file', tool: 'Read', path: '/repo/certs/server.pem' },

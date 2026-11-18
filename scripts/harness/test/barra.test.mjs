@@ -18,6 +18,9 @@ describe('barra', () => {
   it('fora da barra: nada a decidir', () => {
     assert.deepEqual(mudancasNaBarra([mudou('src/items/items.service.ts', ['a'], ['b']), mudou('docs/memory/x.md', ['texto'], ['outro texto'])]), { achados: [], semPatch: [] })
   })
+  it('a fixture dos testes do harness é barra', () => {
+    assert.deepEqual(itens([mudou('scripts/harness/test/fixture.mjs', ['  return root'], ['  return null'])]), ['o gate do CI e do harness'])
+  })
   it('o workflow do CI: qualquer linha conta, também a que aperta', () => {
     assert.deepEqual(itens([mudou('.github/workflows/ci.yml', [], ['      - run: pnpm lint --max-warnings 0'])]), ['o gate do CI e do harness'])
   })

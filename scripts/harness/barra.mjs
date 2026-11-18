@@ -98,6 +98,8 @@ export const GUARDAS = [
   guarda(ITENS.gate, /^harness\.config\.json$/, MUDANCA),
   guarda(ITENS.gate, /^(?:vitest\.config(?:\.\w+)?\.ts|tsconfig(?:\.\w+)?\.json|\.oxlintrc\.json)$/, MUDANCA),
   guarda(ITENS.gate, script('check-claims|lib|suite|teto-de-memoria|memory|skills'), MUDANCA),
+  // A fixture de que todos os testes do harness tiram run, makeRepo e write (revisão fria).
+  guarda(ITENS.gate, /^scripts\/harness\/test\/fixture\.mjs$/, MUDANCA),
   guarda(ITENS.gate, TESTE_DO_GATE, { trocada: true, linhaCom: PULO_DE_TESTE, entra: PULO_DE_TESTE, codigo: true }),
   guarda(ITENS.gate, TEXTO, { termo: /\bgate\b|--no-verify|push forçado|pre-push/i }),
   guarda(ITENS.gate, skillDaBarra('pre-push'), SKILL),

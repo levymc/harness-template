@@ -12,7 +12,7 @@
  */
 import { basename, dirname, isAbsolute, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { isMain, runHook } from './_io.mjs'
+import { carregarMotor, isMain, runHook } from './_io.mjs'
 
 const RAIZ = process.env.HARNESS_ROOT ? resolve(process.env.HARNESS_ROOT) : resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 
@@ -41,21 +41,23 @@ export function fileAction(input, root = RAIZ) {
   }
 }
 
-/** A porta de conserto: o que o agente precisa editar para consertar um guarda quebrado. */
+/**
+ * A porta de conserto: o que o agente precisa para consertar um guarda quebrado — ler qualquer
+ * arquivo que não seja segredo (a mensagem de erro manda ler docs/regras.md) e escrever no
+ * próprio guarda.
+ */
 export function repairsTheGuard(input, root = RAIZ) {
+  if (ehSegredo(input.tool_input?.file_path)) return false
+  if (input.tool_name === 'Read') return true
   const caminho = repoPath(input.tool_input?.file_path, root)
-  if (caminho === null || ehSegredo(input.tool_input?.file_path)) return false
+  if (caminho === null) return false
   return caminho === 'harness.config.json' || caminho.startsWith('.claude/hooks/') || caminho.startsWith('scripts/harness/')
 }
 
 if (isMain(import.meta)) {
   await runHook(
     async input => {
-      const [{ loadConfig }, { CATALOG }, { evaluateAction, hookMessages }] = await Promise.all([
-        import('../../scripts/harness/lib.mjs'),
-        import('../../scripts/harness/rules/catalog.mjs'),
-        import('../../scripts/harness/rules/engine.mjs'),
-      ])
+      const { loadConfig, CATALOG, evaluateAction, hookMessages } = await carregarMotor()
       return hookMessages(evaluateAction(fileAction(input), CATALOG, loadConfig()))
     },
     { failClosed: true, onError: input => (repairsTheGuard(input) ? null : 'barra') },

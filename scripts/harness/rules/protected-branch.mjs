@@ -17,6 +17,7 @@ export default {
       { branch: 'main', command: 'git push' },
       { command: 'bash -c "git push origin master"' },
       { branch: 'main', command: 'git push origin HEAD' },
+      { command: 'git push origin HEAD:refs/heads/main' },
     ],
     allows: [
       { command: 'git commit -m "conserta o push to main"' },
@@ -39,7 +40,7 @@ export default {
         const refspecs = git.args.filter(a => !a.startsWith('-')).slice(1)
         // HEAD é a branch atual: `git push origin HEAD` na main é push na main (revisão fria).
         const destino = r => {
-          const d = r.replace(/^\+/, '').split(':').pop()
+          const d = r.replace(/^\+/, '').split(':').pop().replace(/^refs\/heads\//, '')
           return d === 'HEAD' ? action.branch : d
         }
         const alvoProtegido = refspecs.some(r => protegidas.includes(destino(r)))

@@ -28,6 +28,19 @@ export function isMain(meta) {
   return norm(fileURLToPath(meta.url)) === norm(process.argv[1])
 }
 
+/**
+ * O motor de regras, carregado por import() — chame DENTRO do runHook: o erro de import ou de
+ * sintaxe numa regra vira exceção no try, e o guarda barra.
+ */
+export async function carregarMotor() {
+  const [{ loadConfig }, { CATALOG }, { evaluateAction, hookMessages }] = await Promise.all([
+    import('../../scripts/harness/lib.mjs'),
+    import('../../scripts/harness/rules/catalog.mjs'),
+    import('../../scripts/harness/rules/engine.mjs'),
+  ])
+  return { loadConfig, CATALOG, evaluateAction, hookMessages }
+}
+
 export function readInput() {
   try {
     const raw = readFileSync(0, 'utf8')

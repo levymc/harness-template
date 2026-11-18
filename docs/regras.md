@@ -79,8 +79,10 @@ Os guardas (`bash-guard`, `file-guard`) **falham fechado**: se o motor quebra (c
 ilegível, bug numa regra), o comando é barrado com "erro interno, barrando por segurança".
 Guarda que deixa passar quando quebra não protege nada justamente quando mais importa.
 
-Para não prender ninguém, a escrita em `.claude/hooks/`, `scripts/harness/` e
-`harness.config.json` continua liberada com o motor quebrado — é por ali que se conserta.
+Para não prender ninguém, com o motor quebrado a leitura de qualquer arquivo continua liberada,
+e a escrita em `.claude/hooks/`, `scripts/harness/` e `harness.config.json` também — é por ali
+que se conserta. O erro de import ou de sintaxe numa regra também barra: o motor é carregado
+dentro do hook, não no topo.
 Segredo continua barrado mesmo nessa porta. Se nem assim der, peça ao usuário. Os hooks
 informativos (`session-start`, `usage-log`, `stop-check`) continuam deixando passar quando
 quebram.

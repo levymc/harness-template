@@ -12,17 +12,7 @@
  * scripts/harness/test/hooks.test.mjs exercitam o processo como o Claude Code o roda.
  */
 import { execFileSync } from 'node:child_process'
-import { isMain, runHook } from './_io.mjs'
-
-/** O motor entra por import() dentro do runHook: o erro de import ou de sintaxe numa regra também barra. */
-async function motor() {
-  const [{ loadConfig }, { CATALOG }, { evaluateAction, hookMessages }] = await Promise.all([
-    import('../../scripts/harness/lib.mjs'),
-    import('../../scripts/harness/rules/catalog.mjs'),
-    import('../../scripts/harness/rules/engine.mjs'),
-  ])
-  return { loadConfig, CATALOG, evaluateAction, hookMessages }
-}
+import { carregarMotor, isMain, runHook } from './_io.mjs'
 
 export function gitState(cwd) {
   const run = args => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
@@ -50,7 +40,7 @@ if (isMain(import.meta)) {
   await runHook(async input => {
     const action = shellAction(input)
     if (!action) return null
-    const { loadConfig, CATALOG, evaluateAction, hookMessages } = await motor()
+    const { loadConfig, CATALOG, evaluateAction, hookMessages } = await carregarMotor()
     return hookMessages(evaluateAction(action, CATALOG, loadConfig()))
   }, { failClosed: true })
 }

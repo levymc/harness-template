@@ -66,3 +66,9 @@
 - 5 (bloqueia) barra sem sensor no repo adotado: `.github/workflows/fluxo.yml` entra no layer.
 - 6 `+refspec` com lease agora barra; 7 `git push origin HEAD` na main barra; 8 reconferir depois de aprovar documentado; 9 ADR 0006 corrigida; 10 `git commit -uno` passa.
 - evidência: `pnpm check` exit 0, harness:test 217/217, `rule-proofs` com os casos novos; o check pegou duas afirmações minhas no conserto (caminho de exemplo, contagem da página 10→11).
+
+### 2026-11-18 — revisão fria, rodada 2: 12 achados; 11 corrigidos, 1 registrado como limite
+- corrigidos: `HEAD:refs/heads/main`; `xargs` com git/rm/gh e `| bash /dev/stdin`, `pwsh -Command -`, `bash -c "$(cat)"` (no-hidden-command); `git -c core.hooksPath=…`; `--method=PUT`/`-XPUT`; `cat .env*` e `git show HEAD:.env`; `rm`/`ri -Recurse` no PowerShell; leitura liberada com o motor quebrado; fixture dos testes na barra; ponto `ci` sem uso removido; carregamento do motor num lugar só (`carregarMotor` no _io).
+- limite registrado (ADR 0007): a autorização por comentário aceita o autor do PR — é o desenho do repositório de um dono só.
+- decisão: sem terceira rodada — nenhum achado da rodada 2 bloqueia (nenhuma regressão contra o guarda antigo; o guarda é melhor esforço, registrado na ADR 0007; a barra no CI é o que segura).
+- evidência: `pnpm check` exit 0, harness:test 218/218; prove.mjs nas 3 correções fora das provas de regra → as 3 PEGAS.

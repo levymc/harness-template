@@ -300,11 +300,14 @@ function unwrap(raw, shell) {
   }
   if (SHELLS_BASH.has(program)) {
     const at = args.findIndex(w => /^-[a-z]*c[a-z]*$/.test(w.value))
-    if (at > -1 && args[at + 1]) return parseShell(args[at + 1].value, 'bash')
+    // Texto dinâmico (`bash -c "$(cat)"`) só existe na hora: fica como o shell, e a regra
+    // no-hidden-command o barra.
+    if (at > -1 && args[at + 1] && !args[at + 1].dynamic) return parseShell(args[at + 1].value, 'bash')
   }
   if (SHELLS_POWERSHELL.has(program)) {
     const at = args.findIndex(w => /^-(c|command)$/i.test(w.value))
-    if (at > -1) return parseShell(args.slice(at + 1).map(w => w.value).join(' '), 'powershell')
+    // `-Command -` lê da entrada, e texto dinâmico só existe na hora: ficam como o shell.
+    if (at > -1 && args[at + 1] && args[at + 1].value !== '-' && !args[at + 1].dynamic) return parseShell(args.slice(at + 1).map(w => w.value).join(' '), 'powershell')
   }
   if (program === 'cmd') {
     const at = args.findIndex(w => /^\/[ck]$/i.test(w.value))

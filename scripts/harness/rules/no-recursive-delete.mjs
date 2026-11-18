@@ -6,7 +6,13 @@ import { parseShell } from './shell.mjs'
 
 const norm = alvo => alvo.replace(/^\.[\\/]/, '').replace(/[\\/]+$/, '')
 
+/** No PowerShell, rm/del/ri são o Remove-Item, que apaga recursivo só com -Recurse (sem -Force). */
+const ALIASES_DO_REMOVE_ITEM = new Set(['remove-item', 'rm', 'del', 'erase', 'ri', 'rd', 'rmdir'])
+
 function recursivoForcado(command) {
+  if (command.shell === 'powershell' && ALIASES_DO_REMOVE_ITEM.has(command.program)) {
+    return command.args.some(w => /^-r/i.test(w.value) || w.value.toLowerCase() === '/s')
+  }
   if (command.program === 'rm') {
     const flags = command.args.filter(w => w.value.startsWith('-')).map(w => w.value)
     const curtas = flags.filter(f => !f.startsWith('--')).join('')
@@ -40,6 +46,8 @@ export default {
       { command: 'bash -c "rm -rf ."' },
       { command: 'find . -name x -exec rm -rf {} +' },
       { shell: 'powershell', command: 'Remove-Item -Recurse -Force src' },
+      { shell: 'powershell', command: 'rm -Recurse src' },
+      { shell: 'powershell', command: 'ri -r src' },
     ],
     allows: [
       { command: 'rm -rf node_modules dist/' },

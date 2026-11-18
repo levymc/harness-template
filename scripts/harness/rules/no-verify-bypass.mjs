@@ -26,6 +26,7 @@ export default {
       { command: 'git commit -anm x' },
       { command: 'git push --no-verify origin feat/x' },
       { command: 'sh -c "git commit --no-verify -m x"' },
+      { command: 'git -c core.hooksPath=/dev/null commit -m x' },
     ],
     allows: [
       { command: 'git commit -m "documenta por que nunca usar --no-verify"' },
@@ -40,7 +41,9 @@ export default {
     for (const command of parseShell(action.command, action.shell)) {
       const git = gitInvocation(command)
       if (git?.sub !== 'commit' && git?.sub !== 'push') continue
-      const pula = git.args.includes('--no-verify') || (git.sub === 'commit' && git.args.some(temN))
+      // `git -c core.hooksPath=/dev/null commit` desliga os hooks do mesmo jeito (revisão fria).
+      const semHooks = git.configs.some(c => /^core\.hookspath=/i.test(c))
+      const pula = semHooks || git.args.includes('--no-verify') || (git.sub === 'commit' && git.args.some(temN))
       if (pula) found.push('--no-verify pula os hooks do git. Conserte o que o hook reclamou.')
     }
     return found

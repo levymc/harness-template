@@ -11,7 +11,8 @@
  */
 import { hashTerm } from '../lib.mjs'
 
-export const POINTS = Object.freeze(['agent-hook', 'ci'])
+/** Onde a regra roda. Só o hook do agente existe hoje; ponto novo entra quando algo o rodar (revisão fria). */
+export const POINTS = Object.freeze(['agent-hook'])
 export const MODES = Object.freeze(['warn', 'block'])
 export const ACTION_KINDS = Object.freeze(['shell', 'file'])
 const ID = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/
