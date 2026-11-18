@@ -31,3 +31,13 @@
 - achado (fora do escopo): `src/items/items.service.ts` tem 33% — o esqueleto cobre o serviço só pelo e2e, que a mutação não roda.
 - evidência (critério 3): `pnpm check` exit 0 (harness:test 177/177); `mutacao.mjs planejar --base origin/main` gerou 33 fatias; `rodar --alvo harness` em falhas.mjs: 58,50% → exit 1, depois dos testes → exit 0; `rodar --alvo produto` em items.service.ts rodou com o Vitest (33,33%, exit 1 pelo break). O workflow só roda no GitHub: NÃO verificado.
 - próximo passo: fatia 4 (loop de atrito e auditoria da sessão).
+
+### 2026-11-18 — fatia 4: loop de atrito e auditoria da sessão
+- feito: `scripts/harness/sessao.mjs` (lê o .jsonl do Claude Code, numera turnos, mascara segredo, trecho), `atrito.mjs` (gerar/fila/triagem — fila = issues com label `atrito` pelo gh; nunca publica sozinho), `conferir-sessao.mjs` (4 faltas ao ritual); skills `relatar-atrito` e `triar-atrito`; `fechar-tarefa` roda a auditoria; `jardinagem` lê a fila e procura aviso repetido.
+- decisão: relato e triagem num script só (`atrito.mjs`), sem Jira; publicar issue/comentário é sempre do agente com OK do usuário.
+- decisão: mascaramento mais simples que o da referência (formas comuns); limite declarado no script e na skill.
+- achado: rodar a auditoria contra ESTA sessão deu falso positivo — a regex de push acusou os commits cuja mensagem cita `git push --force`. Trocada pelo parser de shell do motor; o caso virou teste. (Mesma lição do bash-guard antigo: texto entre aspas é dado.)
+- achado: no Windows, o caminho devolvido em minúsculas quebrava a detecção do PROGRESS.md; corrigido com teste.
+- evidência (critério 4): `pnpm check` exit 0 — harness:test 195/195; auditoria da sessão real: 1 falta, a esperada (resumo final ainda não escrito); `prove.mjs --lista` com 6 sabotagens (citação literal, vermelho da triagem, segredo no relato, push pelo parser, limite de edições, mascaramento de MAIÚSCULAS=) → as 6 PEGAS.
+- não verificado: `gh issue create/list` contra o GitHub de verdade (só pelo dublê no teste).
+- próximo passo: fatia 5 (a barra).

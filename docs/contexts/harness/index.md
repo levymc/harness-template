@@ -18,6 +18,8 @@ guardas, a memória e as lições que viram checagem. O porquê de cada peça es
   vermelho; recusa se a verificação já estava vermelha antes.
 - `scripts/harness/falhas.mjs`, `revisao-fria.mjs`, `recorte.mjs`: as peças da validação antes
   do "pronto" e da cobertura de lacunas.
+- `scripts/harness/sessao.mjs`, `atrito.mjs`, `conferir-sessao.mjs`: o loop de atrito (skills
+  `relatar-atrito` e `triar-atrito`) e a auditoria do ritual numa sessão real.
 - `scripts/harness/suite.mjs` e `teto-de-memoria.mjs`: a suíte com Temp limpa e teto de RAM.
 - `mutacao.mjs` (em scripts/harness), `stryker.config.json` (harness) e
   `stryker.produto.config.json` (src/, Vitest): a mutação do PR. Só do template: depende do

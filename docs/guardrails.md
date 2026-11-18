@@ -34,6 +34,9 @@ vira peso morto que ninguém ousa remover.
 | Concluir "pronto" sem dizer o que não foi verificado | passo pulado em silêncio parece aprovação | revisão | recorrente | nunca |
 | Marcar critério de tarefa como passa:true sem evidência citada | sessão futura conclui que acabou sem ninguém ter visto passar | `check-claims:work-tasks` | lacuna vista ao comparar com o harness de referência | nunca |
 | Terceira tentativa com a mesma hipótese depois de duas falhas iguais | gasta tempo e empurra o agente a afrouxar o teste | `scripts/harness/falhas.mjs` | harness de referência | se a skill validar-antes-de-concluir sair do harness |
+| Relatar atrito sem trecho literal da sessão, ou com segredo | relato de memória vira opinião; segredo publicado não volta | `scripts/harness/atrito.mjs` | harness de referência | nunca |
+| Aceitar correção de atrito sem teste vermelho na main | sem o vermelho, nada prova que o defeito existia nem que o conserto o resolveu | `scripts/harness/atrito.mjs` | harness de referência | nunca |
+| Push sem validar, ou resumo sem o que não foi verificado | o ritual pulado deixa o repositório verde e a pessoa enganada | `scripts/harness/conferir-sessao.mjs` | harness de referência (conferidor da sessão) | se o hook Stop passar a conferir o ritual |
 | Concluir sem revisão de quem não escreveu a mudança | quem escreveu defende o próprio diff | revisão | harness de referência | nunca |
 | Description de skill acima de 280 caracteres ou sem "Use quando" | entra no contexto de toda sessão; sem gatilho, a skill não dispara na hora certa | `check-claims:skill-frontmatter` | harness de referência | se o Claude Code deixar de carregar as descriptions em toda sessão |
 | Linha nova de código que nenhum teste verifica (mutante sobrevive) | cobertura de linha não prova verificação; o teste que roda e não confere passa em tudo | `.github/workflows/mutacao.yml` | harness de referência | se o custo da mutação passar do valor (rever o break) |

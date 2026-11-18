@@ -16,7 +16,7 @@
     },
     {
       "descricao": "Fatia 4: skills relatar-atrito (gh issue label atrito, ou texto) e triar-atrito; sessao.mjs, atrito.mjs (recusa citação inventada), triagem.mjs (recusa sem saída vermelha), conferir-sessao.mjs chamado pela fechar-tarefa",
-      "passa": false
+      "passa": true
     },
     {
       "descricao": "Fatia 5: barra.mjs acusa diff que toca a barra (mudança, teste trocado, .skip); conferir-fluxo.mjs exige revisão no commit da ponta ou comentário de Autorização do merge; workflow fluxo.yml com pull_request_target e checkout da main; invariante no AGENTS.md; ADR",

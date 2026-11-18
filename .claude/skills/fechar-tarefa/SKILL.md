@@ -21,7 +21,11 @@ O histórico fica no git; o que vale a pena lembrar sobe para um lugar durável.
 3. **Verifique** pela skill `validar-antes-de-concluir`: gate inteiro na mesma rodada,
    comportamento exercitado, diff relido, revisão fria sem achado que bloqueia (ou diga o
    que ficou vermelho, o que não rodou, e por quê).
-4. **Apague** a pasta `work/<slug>/` no mesmo commit que fecha o trabalho, com a
+4. **Audite a sessão:** `node scripts/harness/conferir-sessao.mjs`. Cada falta ao ritual
+   (tarefa aberta tarde, push sem validar, `passa:true` sem evidência, resumo sem o que não
+   foi verificado) mostra onde o harness não segurou o agente: relate pela skill
+   `relatar-atrito`, com o OK do usuário. A falta do resumo é esperada antes do resumo final.
+5. **Apague** a pasta `work/<slug>/` no mesmo commit que fecha o trabalho, com a
    mensagem citando o que foi destilado e para onde.
-5. **Resumo ao usuário:** o que foi feito, o que foi verificado, **o que não foi
+6. **Resumo ao usuário:** o que foi feito, o que foi verificado, **o que não foi
    verificado**, e o que foi destilado para onde.

@@ -24,6 +24,11 @@ revisão **propõe**; apagar ou aposentar é com o usuário.
    se fecha (skill `fechar-tarefa`) ou se continua.
 6. **AGENTS.md**: alguma linha já é garantida por check? Remova a prosa — o teto existe
    para forçar essa poda.
+7. **Atritos**: `node scripts/harness/atrito.mjs fila`. Issue sem triagem há mais de 14 dias
+   → proponha a triagem (skill `triar-atrito`). Três ou mais na mesma skill → proponha
+   mudar a skill de uma vez. Sem `gh`, diga que a fila não foi lida.
+8. **Aviso repetido**: o mesmo aviso aparecendo duas vezes no texto (skill, AGENTS.md,
+   PROGRESS) é candidato a virar lint, teste ou hook (skill `licao`).
 
 Entregue uma lista curta: o que propõe mudar, com o motivo e a evidência de cada item,
 e o que não conseguiu verificar.
