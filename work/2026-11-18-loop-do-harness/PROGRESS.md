@@ -50,3 +50,10 @@
 - evidência (critério 5): `pnpm check` exit 0 — harness:test 212/212 (antes dos 2 casos novos), `✓ 19 regras conferidas`; `barra.mjs --base origin/main` nesta branch acusa os 8 itens (este PR precisa da autorização do dono); conferidor testado contra servidor HTTP local no papel da API; `prove.mjs --lista` 8 sabotagens: 5 pegas de primeira, 3 pegas depois dos testes novos.
 - não verificado: o workflow `fluxo` e o status no GitHub de verdade; a proteção da main exigindo o status é configuração manual.
 - próximo passo: fatia 6 (maturidade, custo, documentação, HTML).
+
+### 2026-11-18 — fatia 6: maturidade, custo, documentação; gate inteiro
+- feito: skill `achar-o-proximo-degrau` (+ perguntas por degrau, neutralizadas), `docs/gastar-menos-uso.md` (sem os números internos), README sem contagens soltas, `docs/harness-template.html` com contagens marcadas `data-harness` e tabela de regras completa, regra `html-stats` no check, linha no guardrails.
+- memória: MANTIDA. Os 3 fatos suspeitos (citavam package.json e harness.config.json, mudados aqui) foram relidos — continuam verdadeiros — e reconfirmados com `memory touch`. `memory verify`: nenhum suspeito; `memory lint`: 3 fatos conferidos.
+- evidência (critério 6): `check-claims --only html-stats` verde; prove.mjs com 3 sabotagens (contagem velha, regra trocada na tabela, comparação desligada) → as 3 PEGAS; README e harness.md atualizados; adopt.test verde (layer leva docs/regras.md; mutação fica no layerExclude).
+- evidência (critério 7): gate inteiro na mesma rodada — `pnpm check` exit 0 (lint, typecheck, test 4/4, harness:check 20 regras, harness:test 216/216), `pnpm build` exit 0, `pnpm db:migrate` + `pnpm test:e2e` 4/4 (com .env do .env.example); `memory verify` sem suspeito; toda guarda nova provada com prove.mjs nas fatias 1–6.
+- próximo passo: revisão fria (revisor-frio) e fechamento.

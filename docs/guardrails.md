@@ -28,6 +28,7 @@ vira peso morto que ninguém ousa remover.
 | Fato de memória com citação morta ou índice dessincronizado | memória que mente é pior que nenhuma | `check-claims:memory` | índice escrito à mão com linha quebrada | nunca |
 | Acumular tarefas abertas em `work/` | ruído em toda sessão; 634 pastas num projeto de origem | `check-claims:work-tasks` | idem | nunca |
 | ADR sem condição de revisão, ou número repetido | decisão vira dogma; três números de ADR duplicados num projeto de origem | `check-claims:adr-shape` | idem | nunca |
+| Página de visão geral com contagem velha ou lista de regras desatualizada | número que ninguém confere decai em silêncio | `check-claims:html-stats` | a página dizia 17 regras e 94 testes com 18 e 117 | nunca |
 | Link relativo quebrado na documentação | bootstrap aponta para arquivo movido | `check-claims:md-links` | índice da documentação movido por um commit e nunca atualizado no AGENTS.md | nunca |
 | Apagar recursivamente fora dos diretórios gerados | destrói fonte que talvez não esteja no git | `rule:no-recursive-delete` | `rm -rf` só em prosa nos projetos de origem | nunca |
 | Regra do motor sem prova, ou que deixou de pegar o que dizia | guarda que nunca foi vista falhar não protege; guarda que barra tudo é desligada | `check-claims:rule-proofs` | ADR 0006 | nunca |

@@ -24,11 +24,11 @@
     },
     {
       "descricao": "Fatia 6: skill achar-o-proximo-degrau, docs/gastar-menos-uso.md, docs/harness.md e README atualizados, números do harness-template.html conferidos por regra do check, layer do adopt inclui as peças novas",
-      "passa": false
+      "passa": true
     },
     {
       "descricao": "pnpm check verde e pnpm memory verify sem fato quebrado ao fim; cada guarda nova provada com prove.mjs",
-      "passa": false
+      "passa": true
     }
   ],
   "fora_de_escopo": [

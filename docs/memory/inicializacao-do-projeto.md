@@ -3,7 +3,7 @@ name: inicializacao-do-projeto
 description: Como e por que o harness-template nasceu em 2026-10-13 — origem, restrições do dono e o que o bootstrap ensinou
 type: project
 status: active
-verified: 2026-10-13
+verified: 2026-11-18
 citations:
   - path: harness.config.json
     anchor: '"template": true'

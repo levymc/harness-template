@@ -363,6 +363,39 @@ export const RULES = [
     },
   },
   {
+    id: 'html-stats',
+    descricao: 'a página HTML do harness (docs/*.html) afirma as contagens reais e lista as regras do check que existem',
+    // Visto em 2026-11-18: a página dizia "17 regras" e "94 testes" quando já eram 18 e 117 — o
+    // check só lia .md. Número marcado com data-harness é conferido; a lista de regras também.
+    run({ root, files, catalog = CATALOG }) {
+      const paginas = files.filter(f => /^docs\/[^/]+\.html$/.test(f))
+      if (!paginas.length) return []
+      const settings = existsSync(resolve(root, '.claude/settings.json')) ? readFileSync(resolve(root, '.claude/settings.json'), 'utf8') : ''
+      const real = {
+        'regras-check': RULES.length,
+        'regras-motor': catalog.length,
+        hooks: new Set([...settings.matchAll(/\.claude\/hooks\/([\w-]+\.mjs)/g)].map(m => m[1])).size,
+        skills: files.filter(f => /^\.claude\/skills\/[^/]+\/SKILL\.md$/.test(f)).length,
+        agentes: files.filter(f => /^\.claude\/agents\/[^/]+\.md$/.test(f)).length,
+      }
+      return paginas.flatMap(pagina => {
+        const html = readFileSync(resolve(root, pagina), 'utf8')
+        const erros = []
+        for (const [, chave, valor] of html.matchAll(/data-harness="([\w-]+)"[^>]*>\s*(\d+)\s*</g)) {
+          if (!(chave in real)) erros.push(`${pagina}: data-harness="${chave}" não é contagem conhecida (${Object.keys(real).join(', ')})`)
+          else if (Number(valor) !== real[chave]) erros.push(`${pagina}: diz ${valor} para "${chave}", e são ${real[chave]}`)
+        }
+        const listadas = [...html.matchAll(/^\s*\['([a-z][\w-]*)',\s*'/gm)].map(m => m[1])
+        if (listadas.length) {
+          const ids = RULES.map(r => r.id)
+          for (const id of ids.filter(i => !listadas.includes(i))) erros.push(`${pagina}: a tabela de regras não traz ${id}`)
+          for (const id of listadas.filter(i => !ids.includes(i))) erros.push(`${pagina}: a tabela de regras traz ${id}, que não existe no check`)
+        }
+        return erros
+      })
+    },
+  },
+  {
     id: 'rule-proofs',
     descricao: 'toda regra do motor (scripts/harness/rules) cumpre o contrato, passa na própria prova e tem seção em docs/regras.md',
     run({ root, catalog = CATALOG }) {

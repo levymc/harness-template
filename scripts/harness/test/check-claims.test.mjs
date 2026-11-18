@@ -316,6 +316,26 @@ describe('work-tasks', () => {
   })
 })
 
+describe('html-stats', () => {
+  const pagina = (n, linhas) => ({ 'docs/visao.html': `<b data-harness="skills">${n}</b>\n<script>\nconst regras = [\n${linhas.map(id => `    ['${id}', 'texto'],`).join('\n')}\n]\n</script>\n` })
+  const todas = () => RULES.map(r => r.id)
+  it('aceita a página com a contagem real e todas as regras', () => {
+    assert.deepEqual(erros(repo(pagina(1, todas())), 'html-stats'), [])
+  })
+  it('pega contagem velha e chave desconhecida', () => {
+    assert.match(erros(repo(pagina(7, todas())), 'html-stats')[0], /diz 7 para "skills", e são 1/)
+    assert.match(erros(repo({ 'docs/visao.html': '<b data-harness="testes">94</b>' }), 'html-stats')[0], /não é contagem conhecida/)
+  })
+  it('pega regra que falta na tabela e regra que não existe mais', () => {
+    const e = erros(repo(pagina(1, [...todas().slice(1), 'regra-velha'])), 'html-stats').join('\n')
+    assert.match(e, new RegExp(`não traz ${RULES[0].id}`))
+    assert.match(e, /traz regra-velha, que não existe/)
+  })
+  it('repositório sem página HTML: nada a conferir', () => {
+    assert.deepEqual(erros(repo(), 'html-stats'), [])
+  })
+})
+
 describe('rule-proofs', () => {
   it('aceita o catálogo real, com uma seção por regra em docs/regras.md', () => {
     assert.deepEqual(erros(repo(), 'rule-proofs'), [])

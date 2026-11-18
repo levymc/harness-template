@@ -249,10 +249,10 @@ footer div { max-width: 1120px; margin: 0 auto; display: flex; justify-content: 
       <p>Ritual de sessão, memória com citações verificáveis, proibições com sensor e lições que viram checagem. Parte de um projeto novo ou entra num projeto antigo sem sobrescrever nada.</p>
     </div>
     <div class="stats" role="list">
-      <div class="stat" role="listitem"><b>17</b><span>regras no check-claims</span></div>
-      <div class="stat" role="listitem"><b>94</b><span>testes do próprio harness</span></div>
-      <div class="stat" role="listitem"><b>5</b><span>hooks do Claude Code</span></div>
-      <div class="stat" role="listitem"><b>9 + 3</b><span>skills e subagentes</span></div>
+      <div class="stat" role="listitem"><b data-harness="regras-check">20</b><span>regras no check-claims</span></div>
+      <div class="stat" role="listitem"><b data-harness="regras-motor">10</b><span>regras de ação do agente, com prova</span></div>
+      <div class="stat" role="listitem"><b data-harness="hooks">5</b><span>hooks do Claude Code</span></div>
+      <div class="stat" role="listitem"><b><span data-harness="skills">19</span> + <span data-harness="agentes">4</span></b><span>skills e subagentes</span></div>
     </div>
   </div>
 </header>
@@ -382,7 +382,7 @@ footer div { max-width: 1120px; margin: 0 auto; display: flex; justify-content: 
             <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
             <input id="filtro" type="search" placeholder="Filtrar regras" autocomplete="off" aria-label="Filtrar regras">
           </label>
-          <span class="count" id="contagem">17 de 17</span>
+          <span class="count" id="contagem"></span>
         </div>
         <div class="table-wrap">
           <table>
@@ -461,7 +461,7 @@ footer div { max-width: 1120px; margin: 0 auto; display: flex; justify-content: 
           <ul class="vlist">
             <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>CI no GitHub</b> de ponta a ponta: lint, typecheck, build, unit, harness, migrate e e2e.</span></li>
             <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Hooks no Claude Code real:</b> o contexto do SessionStart chega ao modelo e o <code>reset --hard</code> é bloqueado.</span></li>
-            <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Cada regra e hook</b> vistos falhar por mutação, e a suíte de 94 testes verde.</span></li>
+            <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Cada regra e hook</b> vistos falhar por sabotagem (<code>prove.mjs</code>), a suíte do harness verde e a mutação nas linhas novas de cada PR.</span></li>
             <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Adoção num projeto real:</b> nada sobrescrito, e o check copiado achou problemas reais na memória dele.</span></li>
           </ul>
         </div>
@@ -490,7 +490,7 @@ footer div { max-width: 1120px; margin: 0 auto; display: flex; justify-content: 
     ['agents-md-ceiling', 'AGENTS.md dentro do teto de linhas.'],
     ['pending-markers', 'Nenhum marcador "pendente" sobrou na prosa do harness.'],
     ['forbidden-terms', 'Nenhum termo proibido, guardado por hash, em arquivo do repositório.'],
-    ['skill-frontmatter', 'Toda skill tem frontmatter com name igual à pasta e description.'],
+    ['skill-frontmatter', 'Toda skill tem name igual à pasta e description de até 280 caracteres com "Use quando".'],
     ['agent-frontmatter', 'Todo subagente tem name, description e tools explícito.'],
     ['single-skill-source', 'Skills só em .claude/skills, sem cópia por ferramenta.'],
     ['settings-hygiene', 'settings.json sem caminho absoluto, auto-memória desligada, hooks que existem.'],
@@ -500,7 +500,10 @@ footer div { max-width: 1120px; margin: 0 auto; display: flex; justify-content: 
     ['no-sync', 'sequelize.sync() nunca fora de teste; schema só muda por migration.'],
     ['env-example', 'Toda variável de ambiente lida pelo código está no .env.example.'],
     ['memory', 'Memória: forma, citações vivas, índice em sincronia e tetos.'],
-    ['work-tasks', 'Tarefas abertas dentro do teto, cada uma com task.json válido.'],
+    ['work-tasks', 'Tarefas abertas dentro do teto, task.json válido, e passa:true só com evidência citada no PROGRESS.'],
+    ['third-party-skills', 'Skill de terceiro idêntica à cópia fixada por SHA no skills-lock.json.'],
+    ['html-stats', 'Esta página afirma as contagens reais e lista as regras que existem.'],
+    ['rule-proofs', 'Toda regra de ação do agente cumpre o contrato e passa na própria prova, nos dois sentidos.'],
   ];
   const corpo = document.getElementById('regras-corpo');
   const contagem = document.getElementById('contagem');
