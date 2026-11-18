@@ -50,7 +50,9 @@
     "dist",
     "coverage",
     ".harness",
-    "tmp"
+    "tmp",
+    ".stryker-tmp",
+    "reports"
   ],
   "skillSources": {
     "trusted": [
@@ -75,6 +77,7 @@
     ".claude/agents",
     "docs/harness.md",
     "docs/guardrails.md",
+    "docs/regras.md",
     "docs/memory/README.md",
     "docs/contexts/README.md",
     "docs/contexts/harness",
@@ -82,14 +85,17 @@
     "docs/evals/README.md",
     "skills-lock.json",
     "scripts/harness",
-    "work/.gitkeep"
+    "work/.gitkeep",
+    ".github/workflows/fluxo.yml"
   ],
   "layerExclude": [
     ".claude/skills/novo-modulo",
     ".claude/skills/iniciar-projeto",
     ".claude/skills/novo-repositorio",
     ".claude/skills/pre-push",
-    ".claude/skills/nestjs-expert"
+    ".claude/skills/nestjs-expert",
+    "scripts/harness/mutacao.mjs",
+    "scripts/harness/test/mutacao.test.mjs"
   ],
   "$layer": "O que scripts/harness/adopt.mjs leva a um repositório existente. layerExclude é o que é só do template/esqueleto; AGENTS.md, a skill pre-push, o índice da memória, o README das decisões e o guardrails.md são gerados ou filtrados pelo adopt."
 }

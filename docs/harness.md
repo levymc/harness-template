@@ -25,11 +25,16 @@ que descrevia um código que já tinha mudado. Daí três princípios:
 | `harness.config.json` | tetos, termos proibidos (por hash), branches protegidas, e o manifesto da camada para adoção |
 | `.claude/hooks/` | o que tem de acontecer sempre, sem depender do agente lembrar |
 | `.claude/skills/` | procedimentos, carregados só quando o assunto aparece |
-| `.claude/agents/` | três subagentes de escopo estreito, `tools:` explícito |
+| `.claude/agents/` | subagentes de escopo estreito, `tools:` explícito; o `revisor-frio` revisa sem a conversa de quem escreveu |
 | `scripts/harness/check-claims.mjs` | o repositório não afirma sobre si o que não é verdade |
+| `scripts/harness/rules/` | o motor das regras de ação do agente, cada uma com prova (ADR 0006, `docs/regras.md`) |
 | `scripts/harness/memory.mjs` | índice, lint, verificação e criação de fatos |
 | `scripts/harness/adopt.mjs` | leva a camada de harness a um repositório existente |
-| `scripts/harness/prove.mjs` | aplica uma regressão de propósito, roda a verificação e reverte: "prove que pega" executável |
+| `scripts/harness/prove.mjs` | aplica uma regressão de propósito (ou uma lista), confere que a verificação estava verde antes, roda e reverte: "prove que pega" executável |
+| `scripts/harness/falhas.mjs` · `revisao-fria.mjs` · `recorte.mjs` | o laço que para na segunda falha igual, o pedido da revisão fria, o recorte da entrega (skills `validar-antes-de-concluir` e `cobrir-lacunas-de-teste`) |
+| `mutacao.mjs` (em scripts/harness) · `stryker*.config.json` | mutação só nas linhas novas do PR, em fatias, reprovando arquivo abaixo de 80% (workflow `mutacao` do CI; só do template, não viaja na adoção) |
+| `scripts/harness/sessao.mjs` · `atrito.mjs` · `conferir-sessao.mjs` | o loop de atrito: o trecho literal da sessão, o relato e a triagem (issues com label `atrito`), e a auditoria do ritual numa sessão real |
+| `scripts/harness/suite.mjs` | roda a suíte do harness com a Temp numa pasta vazia (sobra reprova) e teto de RAM |
 | `scripts/harness/test/` | o harness testado como código, nos dois sentidos |
 | `docs/guardrails.md` | toda proibição, com sensor, origem e condição de expiração |
 | `docs/memory/` · `docs/decisions/` · `work/` | memória semântica, decisões, trabalho em andamento |
@@ -40,24 +45,27 @@ que descrevia um código que já tinha mudado. Daí três princípios:
   o índice da memória. É o ritual de início de sessão dos agentes de longa duração —
   "onde estou, o que foi feito, o que está aberto" — feito por código, porque em prosa
   o agente pula.
-- **PreToolUse(Bash)** — `bash-guard.mjs`: commit na branch protegida, `--force`,
-  `--no-verify`, `reset --hard`, `clean -f`, `rm -rf` fora dos diretórios gerados,
-  migração remota, menção a segredo, termo proibido. Ignora o que está entre aspas e em
-  heredoc: `git commit -m "conserta o push to main"` numa branch de feature passa. O
-  primeiro commit do repositório passa mesmo na main.
-- **PreToolUse(Read|Edit|Write)** — `file-guard.mjs`: segredo não entra no contexto,
-  dentro ou fora do repositório. Termo proibido não entra no repositório: é barrado na
-  escrita, antes do check. Arquivo fora do repo, como o plano do modo plano, não é
-  conferido. O caminho da pasta de configuração do usuário pode conter o termo, e
-  bloquear ali travava o planejamento.
+- **PreToolUse(Bash|PowerShell)** — `bash-guard.mjs` e **PreToolUse(Read|Edit|Write)** —
+  `file-guard.mjs`: entregas finas sobre o **motor de regras** em `scripts/harness/rules/`
+  (ADR 0006). Cada proibição é uma regra com `proof` — os casos que ela tem de barrar e os
+  vizinhos que tem de deixar passar — e a prova roda a cada `pnpm harness:check`
+  (`rule-proofs`). As regras, o que fazer quando cada uma barra e como acrescentar outra:
+  `docs/regras.md`. O parser de shell trata aspas e heredoc como dado
+  (`git commit -m "conserta o push to main"` passa) e desembrulha o que roda por dentro
+  (`bash -c "…"`, `$(…)`, `cmd /c`). Termo proibido é barrado na escrita só dentro do
+  repositório: o plano do modo plano, fora dele, mora numa pasta cujo caminho pode
+  conter o termo.
 - **Stop** — `stop-check.mjs`: `check-claims` + typecheck quando há `.ts` alterado.
   Silencioso no sucesso; no fracasso devolve só os erros e o agente continua. Com
   `stop_hook_active` ele deixa parar, para não prender o agente num laço.
 - **PostToolUse(Skill)** e **SubagentStop** — `usage-log.mjs`: grava o uso em
   `.harness/usage.jsonl`, local. Sem medida, aposentar skill é palpite.
 
-Todos são **fail-open**: um erro interno do hook avisa e deixa passar. Guarda que trava
-tudo quando quebra é desligada no primeiro dia.
+Os informativos (SessionStart, Stop, usage-log) são **fail-open**: erro interno avisa e
+deixa passar. Os dois guardas **falham fechado**: guarda que deixa passar quando quebra não
+protege nada justamente quando mais importa. Para não prender ninguém, com o motor quebrado
+a escrita em `.claude/hooks/`, `scripts/harness/` e `harness.config.json` continua liberada
+— é por ali que se conserta (`docs/regras.md`, "Quando o hook quebra").
 
 ## A memória
 
@@ -78,6 +86,35 @@ O desenho está em `docs/memory/README.md`. As três escolhas que mais importam:
 Este documento é da camada de harness e viaja na adoção; por isso não fala do código do
 produto. As guardas do esqueleto NestJS + Sequelize do template (e o que ele já
 ensinou) ficam no documento do esqueleto, apontado pelo `AGENTS.md` do template.
+
+## O loop de melhoria e a barra
+
+O harness melhora pelo que o atrapalhou, num ciclo com prova em cada passo (ADR 0007):
+
+1. **Atrito entra** pela skill `relatar-atrito` (issue com label `atrito`, trecho literal da
+   sessão) ou pela auditoria da sessão no fechamento da tarefa (`conferir-sessao.mjs`).
+2. **Triagem** (`triar-atrito`): reproduz na `main`; defeito só é aceito com o teste novo
+   **vermelho** contra ela.
+3. **Conserto** é tarefa comum: `iniciar-tarefa`, o vermelho vira verde, a `licao` decide se
+   sobe para regra ou hook.
+4. **Prova**: `validar-antes-de-concluir` — gate inteiro, parada na segunda falha igual,
+   revisão fria por um agente sem a conversa — e a mutação nas linhas novas do PR.
+5. **A barra não se mexe pelo loop.** O ciclo muda como o harness trabalha, nunca a régua que o
+   julga sem a decisão de outra pessoa: o PR que toca o gate, as regras e hooks, os pisos, a
+   prova por sabotagem, a revisão fria, a triagem ou o próprio conferidor (`barra.mjs` lista as
+   guardas) só entra com revisão aprovada **no último commit** por quem não o escreveu, ou com o
+   comentário de autorização do merge citando esse commit. No código da barra, qualquer mudança
+   conta, também a que aperta: máquina não separa apertar de afrouxar com certeza. Quem julga é o
+   workflow `fluxo`, que roda o conferidor da `main` (o PR não troca quem o julga). O agente
+   nunca aprova, faz merge ou escreve a autorização (regra `no-merge-by-agent`).
+
+Depois de uma revisão aprovada, o status é reconferido por um comentário qualquer no PR ou
+rodando o workflow `fluxo` à mão — a aprovação sozinha não dispara o workflow, de propósito (o
+evento de revisão rodaria o workflow da branch do PR).
+
+Limites assumidos: a frase reescrita que afrouxa o sentido mantendo o termo não é acusada — fica
+para a revisão fria e para quem lê; e exigir o status `conferidor do fluxo` na proteção da
+`main` é configuração do dono do repositório, que nenhum arquivo daqui garante.
 
 ## Skills de terceiros
 

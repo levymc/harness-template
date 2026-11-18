@@ -9,10 +9,23 @@ guardas, a memória e as lições que viram checagem. O porquê de cada peça es
 
 ## Onde está
 
-- `.claude/hooks/`: um script por evento do Claude Code, todos fail-open.
+- `.claude/hooks/`: um script por evento do Claude Code. Os informativos são fail-open; os
+  guardas (`bash-guard`, `file-guard`) falham fechado e delegam ao motor em
+  `scripts/harness/rules/` (ADR 0006, `docs/regras.md`).
 - `scripts/harness/check-claims.mjs`: as regras, cada uma com id; `--list` mostra todas.
 - `scripts/harness/memory.mjs`: índice, lint, verificação e criação de fatos.
-- `scripts/harness/prove.mjs`: aplica uma regressão de propósito e confirma o vermelho.
+- `scripts/harness/prove.mjs`: aplica uma regressão de propósito (ou uma lista) e confirma o
+  vermelho; recusa se a verificação já estava vermelha antes.
+- `scripts/harness/falhas.mjs`, `revisao-fria.mjs`, `recorte.mjs`: as peças da validação antes
+  do "pronto" e da cobertura de lacunas.
+- `scripts/harness/sessao.mjs`, `atrito.mjs`, `conferir-sessao.mjs`: o loop de atrito (skills
+  `relatar-atrito` e `triar-atrito`) e a auditoria do ritual numa sessão real.
+- `scripts/harness/barra.mjs` e `conferir-fluxo.mjs`: a barra (o que o loop não muda sem a
+  decisão de outra pessoa) e o conferidor que o workflow `fluxo` roda da `main` (ADR 0007).
+- `scripts/harness/suite.mjs` e `teto-de-memoria.mjs`: a suíte com Temp limpa e teto de RAM.
+- `mutacao.mjs` (em scripts/harness), `stryker.config.json` (harness) e
+  `stryker.produto.config.json` (src/, Vitest): a mutação do PR. Só do template: depende do
+  Stryker e não viaja na adoção.
 - `scripts/harness/adopt.mjs` e `scripts/harness/templates/`: a adoção em outro repo.
 - `scripts/harness/test/`: a suíte do próprio harness, com fixture de repositório.
 - `harness.config.json`: tetos, termos proibidos e o manifesto da camada.

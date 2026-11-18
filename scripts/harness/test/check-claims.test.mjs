@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { after, describe, it } from 'node:test'
 import { RULES, runChecks } from '../check-claims.mjs'
+import { CATALOG } from '../rules/catalog.mjs'
 import { hashDir } from '../skills.mjs'
 import { cleanup, makeRepo, read, reindex, TERMO, write } from './fixture.mjs'
 
@@ -102,6 +103,12 @@ describe('skill-frontmatter', () => {
   it('pega name diferente da pasta', () => {
     assert.match(erros(repo({ '.claude/skills/x/SKILL.md': '---\nname: y\ndescription: uma descrição longa o suficiente para valer aqui\n---\n' }), 'skill-frontmatter')[0], /≠ pasta/)
   })
+  const skill = descricao => ({ '.claude/skills/x/SKILL.md': `---\nname: x\ndescription: ${descricao}\n---\n` })
+  it('pega description acima de 280 caracteres e sem "Use quando"; aceita a que cumpre', () => {
+    assert.match(erros(repo(skill(`${'a'.repeat(280)} Use quando x.`)), 'skill-frontmatter')[0], /teto 280/)
+    assert.match(erros(repo(skill('Faz uma coisa útil, descrita com folga, mas sem dizer o gatilho.')), 'skill-frontmatter')[0], /sem "Use quando"/)
+    assert.deepEqual(erros(repo(skill('Faz uma coisa útil, descrita com folga. Use quando precisar dela.')), 'skill-frontmatter'), [])
+  })
   it('ignora cópia de SKILL.md em pasta que o git ignora (workspace de eval)', () => {
     const copia = { '.gitignore': '.claude/skills/*-workspace/\n', '.claude/skills/x-workspace/snap/SKILL.md': '# cópia\n' }
     assert.deepEqual(erros(repo(copia), 'skill-frontmatter'), [])
@@ -125,7 +132,7 @@ describe('skill-frontmatter com escalar de bloco', () => {
   // lia a description como "|-" e acusava "curta" numa skill válida.
   const skill = desc => ({ '.claude/skills/bloco/SKILL.md': `---\nname: bloco\ndescription: ${desc}\nlicense: MIT\n---\n\nCorpo.\n` })
   it('aceita description em bloco longa o bastante', () => {
-    assert.deepEqual(erros(repo(skill('|-\n  Primeira linha da descrição da skill,\n  e a segunda linha completa o sentido.')), 'skill-frontmatter'), [])
+    assert.deepEqual(erros(repo(skill('|-\n  Primeira linha da descrição da skill,\n  e a segunda completa. Use quando o teste pedir.')), 'skill-frontmatter'), [])
   })
   it('continua pegando description em bloco curta demais', () => {
     assert.match(erros(repo(skill('>\n  curta')), 'skill-frontmatter')[0], /curta/)
@@ -175,6 +182,10 @@ describe('guardrails-sensors', () => {
   })
   it('pega proibição sem sensor nenhum', () => {
     assert.match(erros(repo(linha('—')), 'guardrails-sensors')[0], /sem sensor/)
+  })
+  it('aceita regra do motor que existe; pega a que não existe', () => {
+    assert.deepEqual(erros(repo(linha('`rule:no-force-push`')), 'guardrails-sensors'), [])
+    assert.match(erros(repo(linha('`rule:inventada`')), 'guardrails-sensors')[0], /rule:inventada não existe/)
   })
   it('aceita "revisão" como gap declarado e arquivo que existe como sensor', () => {
     assert.deepEqual(erros(repo(linha('revisão')), 'guardrails-sensors'), [])
@@ -293,10 +304,56 @@ describe('work-tasks', () => {
     assert.match(e, /passa:boolean/)
     assert.match(e, /sem PROGRESS/)
   })
+  it('pega critério passa:true sem evidência citada no PROGRESS; aceita com ela', () => {
+    const feita = JSON.stringify({ objetivo: 'o', criterios: [{ descricao: 'd', passa: false }, { descricao: 'e', passa: true }] })
+    assert.match(erros(repo({ 'work/a/task.json': feita, 'work/a/PROGRESS.md': '### hoje\n- feito: e\n' }), 'work-tasks')[0], /critério 2 marcado passa:true sem/)
+    assert.deepEqual(erros(repo({ 'work/a/task.json': feita, 'work/a/PROGRESS.md': '- evidência (critério 2): pnpm test verde\n' }), 'work-tasks'), [])
+  })
   it('pega teto de tarefas abertas', () => {
     const extra = {}
     for (const n of ['a', 'b', 'c']) Object.assign(extra, { [`work/${n}/task.json`]: task, [`work/${n}/PROGRESS.md`]: 'x' })
     assert.match(erros(repo(extra), 'work-tasks')[0], /3 tarefas abertas \(teto 2\)/)
+  })
+})
+
+describe('html-stats', () => {
+  const pagina = (n, linhas) => ({ 'docs/visao.html': `<b data-harness="skills">${n}</b>\n<script>\nconst regras = [\n${linhas.map(id => `    ['${id}', 'texto'],`).join('\n')}\n]\n</script>\n` })
+  const todas = () => RULES.map(r => r.id)
+  it('aceita a página com a contagem real e todas as regras', () => {
+    assert.deepEqual(erros(repo(pagina(1, todas())), 'html-stats'), [])
+  })
+  it('pega contagem velha e chave desconhecida', () => {
+    assert.match(erros(repo(pagina(7, todas())), 'html-stats')[0], /diz 7 para "skills", e são 1/)
+    assert.match(erros(repo({ 'docs/visao.html': '<b data-harness="testes">94</b>' }), 'html-stats')[0], /não é contagem conhecida/)
+  })
+  it('pega regra que falta na tabela e regra que não existe mais', () => {
+    const e = erros(repo(pagina(1, [...todas().slice(1), 'regra-velha'])), 'html-stats').join('\n')
+    assert.match(e, new RegExp(`não traz ${RULES[0].id}`))
+    assert.match(e, /traz regra-velha, que não existe/)
+  })
+  it('repositório sem página HTML: nada a conferir', () => {
+    assert.deepEqual(erros(repo(), 'html-stats'), [])
+  })
+})
+
+describe('rule-proofs', () => {
+  it('aceita o catálogo real, com uma seção por regra em docs/regras.md', () => {
+    assert.deepEqual(erros(repo(), 'rule-proofs'), [])
+  })
+  it('pega regra que deixou de barrar o que a prova diz que barra', () => {
+    const muda = CATALOG.map(rule => (rule.id === 'no-force-push' ? { ...rule, evaluate: () => [] } : rule))
+    const e = runChecks(repo(), { only: 'rule-proofs', catalog: muda }).map(x => x.erro).join('\n')
+    assert.match(e, /no-force-push: deveria barrar e deixou passar "git push --force origin feat\/x"/)
+  })
+  it('pega regra que passou a barrar o caso vizinho legítimo', () => {
+    const tudo = CATALOG.map(rule => (rule.id === 'no-discard-work' ? { ...rule, evaluate: () => ['x'] } : rule))
+    assert.match(runChecks(repo(), { only: 'rule-proofs', catalog: tudo }).map(x => x.erro).join('\n'), /no-discard-work: deveria deixar passar/)
+  })
+  it('pega regra sem prova e regra sem seção em docs/regras.md', () => {
+    const semProva = [...CATALOG, { ...CATALOG[0], id: 'nova-regra', proof: { catches: [], allows: [] } }]
+    const e = runChecks(repo(), { only: 'rule-proofs', catalog: semProva }).map(x => x.erro).join('\n')
+    assert.match(e, /nova-regra: proof\.catches vazio/)
+    assert.match(e, /nova-regra sem seção/)
   })
 })
 

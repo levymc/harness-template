@@ -3,7 +3,7 @@ name: vitest-nao-compila-como-o-build
 description: O Vitest transpila com oxc e ignora erros de tipo e flags do tsconfig — e2e verde não prova que o build compila
 type: gotcha
 status: active
-verified: 2026-10-13
+verified: 2026-11-18
 citations:
   - path: tsconfig.json
     anchor: '"useDefineForClassFields": false'

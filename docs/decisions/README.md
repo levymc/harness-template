@@ -20,3 +20,5 @@ do check-claims confere). Copie [`0000-template.md`](0000-template.md).
 | [0003](0003-orm-sequelize.md) | Sequelize como ORM do esqueleto | accepted |
 | [0004](0004-memoria-organizada-por-contexto.md) | Memória em pastas que espelham os contextos | accepted |
 | [0005](0005-skills-de-terceiros.md) | Skills de terceiros: cópia fixada por SHA + lock | accepted |
+| [0006](0006-motor-de-regras-com-prova.md) | Motor de regras com prova, e guarda que falha fechado | accepted |
+| [0007](0007-loop-de-melhoria-e-a-barra.md) | O loop de melhoria do harness, e a barra que ele não mexe | accepted |

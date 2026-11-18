@@ -1,6 +1,6 @@
 ---
 name: iniciar-tarefa
-description: Abre uma tarefa em work/ com task.json (objetivo e critérios de aceite) e PROGRESS.md. Use antes de qualquer trabalho que não caiba numa única resposta — feature, bug com investigação, refatoração, migração — ou quando o trabalho puder continuar em outra sessão ou máquina.
+description: 'Abre uma tarefa em work/ com task.json (objetivo e critérios de aceite) e PROGRESS.md. Use quando o trabalho não couber numa resposta — feature, bug com investigação, refatoração, migração — ou puder continuar em outra sessão.'
 ---
 
 # Iniciar tarefa
@@ -37,6 +37,7 @@ hook SessionStart imprime as tarefas abertas).
    - próximo passo: …
    ```
 
-5. Critério só vira `"passa": true` com evidência (teste, comando, print) citada na
-   entrada do PROGRESS. Nunca apague nem reescreva um critério para fazê-lo passar;
+5. Critério só vira `"passa": true` com evidência (teste, comando, saída) citada na
+   entrada do PROGRESS, numa linha `- evidência (critério N): …` — N é a posição do
+   critério, a partir de 1; a regra `work-tasks` do check recusa o `true` sem ela. Nunca apague nem reescreva um critério para fazê-lo passar;
    mudar escopo é com o usuário.

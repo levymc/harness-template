@@ -3,7 +3,7 @@ name: nest12-esm-vitest
 description: NestJS 12 é só-ESM; por isso o projeto é "type":"module", imports relativos levam .js e o runner é Vitest, não Jest
 type: project
 status: active
-verified: 2026-10-13
+verified: 2026-11-18
 citations:
   - path: package.json
     anchor: '"type": "module"'

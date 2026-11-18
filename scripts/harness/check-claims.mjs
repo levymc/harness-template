@@ -25,6 +25,8 @@ import { dirname, resolve } from 'node:path'
 
 import { findForbidden, hashTerm, ignoredByGit, isMain, loadConfig, parseFrontmatter, rel, repoFiles, ROOT, toPosix, walk } from './lib.mjs'
 import { lintMemory } from './memory.mjs'
+import { CATALOG } from './rules/catalog.mjs'
+import { catalogProblems } from './rules/engine.mjs'
 import { lockedDirs, verifyLock } from './skills.mjs'
 
 /**
@@ -142,10 +144,11 @@ export const RULES = [
   },
   {
     id: 'skill-frontmatter',
-    descricao: 'toda skill tem frontmatter com name = pasta e description',
+    descricao: 'toda skill tem frontmatter com name = pasta e description de 40 a 280 caracteres com "Use quando"',
     // pelos arquivos do repositório, não pelo disco: o workspace de eval (gitignored) guarda
     // cópias de SKILL.md com outro nome de pasta
     run({ root, files }) {
+      const travadas = lockedDirs(root)
       return files.filter(f => f.startsWith('.claude/skills/') && f.endsWith('/SKILL.md')).map(f => resolve(root, f)).flatMap(file => {
         const pasta = toPosix(dirname(file)).split('/').pop()
         const { data } = parseFrontmatter(readFileSync(file, 'utf8'))
@@ -153,7 +156,14 @@ export const RULES = [
         if (!data) return [`${where}: sem frontmatter — a skill nunca dispara`]
         const erros = []
         if (data.name !== pasta) erros.push(`${where}: name "${data.name}" ≠ pasta "${pasta}"`)
-        if (!data.description || String(data.description).length < 40) erros.push(`${where}: description ausente ou curta — é ela que decide quando a skill dispara`)
+        const descricao = String(data.description ?? '')
+        if (descricao.length < 40) erros.push(`${where}: description ausente ou curta — é ela que decide quando a skill dispara`)
+        // A description de toda skill entra no contexto de toda sessão: o teto é custo, e o
+        // "Use quando" é o gatilho. Skill de terceiro travada no lock não se edita (ADR 0005).
+        else if (!travadas.some(dir => where.startsWith(`${dir}/`))) {
+          if (descricao.length > 280) erros.push(`${where}: description com ${descricao.length} caracteres (teto 280) — ela entra no contexto de toda sessão`)
+          if (!descricao.includes('Use quando')) erros.push(`${where}: description sem "Use quando" — sem o gatilho, o modelo não sabe quando chamá-la`)
+        }
         return erros
       })
     },
@@ -212,8 +222,8 @@ export const RULES = [
   },
   {
     id: 'guardrails-sensors',
-    descricao: 'toda linha de docs/guardrails.md aponta para um sensor que existe',
-    run({ root }) {
+    descricao: 'toda linha de docs/guardrails.md aponta para um sensor que existe (check-claims:<id>, rule:<id>, ou um arquivo)',
+    run({ root, catalog = CATALOG }) {
       const file = resolve(root, 'docs/guardrails.md')
       if (!existsSync(file)) return []
       const ids = new Set(RULES.map(r => r.id))
@@ -231,7 +241,8 @@ export const RULES = [
         for (const ref of refs) {
           const [alvo, id] = ref.split(':')
           if (alvo === 'check-claims' && !ids.has(id)) erros.push(`docs/guardrails.md: sensor check-claims:${id} não existe`)
-          else if (alvo !== 'check-claims' && !existsSync(resolve(root, alvo))) erros.push(`docs/guardrails.md: sensor ${alvo} não existe`)
+          else if (alvo === 'rule' && !catalog.some(rule => rule.id === id)) erros.push(`docs/guardrails.md: sensor rule:${id} não existe no catálogo do motor`)
+          else if (alvo !== 'check-claims' && alvo !== 'rule' && !existsSync(resolve(root, alvo))) erros.push(`docs/guardrails.md: sensor ${alvo} não existe`)
         }
       }
       return erros
@@ -334,9 +345,65 @@ export const RULES = [
         if (!task.objetivo) erros.push(`${where}/task.json sem objetivo`)
         if (!Array.isArray(task.criterios) || !task.criterios.length) erros.push(`${where}/task.json sem criterios de aceite`)
         else if (task.criterios.some(c => typeof c.passa !== 'boolean' || !c.descricao)) erros.push(`${where}/task.json: todo critério precisa de descricao e passa:boolean`)
-        if (!existsSync(resolve(pasta, 'PROGRESS.md'))) erros.push(`${where} sem PROGRESS.md`)
+        const progresso = resolve(pasta, 'PROGRESS.md')
+        if (!existsSync(progresso)) {
+          erros.push(`${where} sem PROGRESS.md`)
+          continue
+        }
+        // Critério só passa com evidência citada (skill iniciar-tarefa): sem isso, uma sessão
+        // futura que vê tudo `true` não tem como saber se alguém viu passar.
+        const texto = readFileSync(progresso, 'utf8')
+        ;(task.criterios ?? []).forEach((c, i) => {
+          if (c?.passa === true && !new RegExp(`evid[eê]ncia \\(crit[eé]rio ${i + 1}\\)`, 'i').test(texto)) {
+            erros.push(`${where}: critério ${i + 1} marcado passa:true sem "evidência (critério ${i + 1})" no PROGRESS.md`)
+          }
+        })
       }
       return erros
+    },
+  },
+  {
+    id: 'html-stats',
+    descricao: 'a página HTML do harness (docs/*.html) afirma as contagens reais e lista as regras do check que existem',
+    // Visto em 2026-11-18: a página dizia "17 regras" e "94 testes" quando já eram 18 e 117 — o
+    // check só lia .md. Número marcado com data-harness é conferido; a lista de regras também.
+    run({ root, files, catalog = CATALOG }) {
+      const paginas = files.filter(f => /^docs\/[^/]+\.html$/.test(f))
+      if (!paginas.length) return []
+      const settings = existsSync(resolve(root, '.claude/settings.json')) ? readFileSync(resolve(root, '.claude/settings.json'), 'utf8') : ''
+      const real = {
+        'regras-check': RULES.length,
+        'regras-motor': catalog.length,
+        hooks: new Set([...settings.matchAll(/\.claude\/hooks\/([\w-]+\.mjs)/g)].map(m => m[1])).size,
+        skills: files.filter(f => /^\.claude\/skills\/[^/]+\/SKILL\.md$/.test(f)).length,
+        agentes: files.filter(f => /^\.claude\/agents\/[^/]+\.md$/.test(f)).length,
+      }
+      return paginas.flatMap(pagina => {
+        const html = readFileSync(resolve(root, pagina), 'utf8')
+        const erros = []
+        for (const [, chave, valor] of html.matchAll(/data-harness="([\w-]+)"[^>]*>\s*(\d+)\s*</g)) {
+          if (!(chave in real)) erros.push(`${pagina}: data-harness="${chave}" não é contagem conhecida (${Object.keys(real).join(', ')})`)
+          else if (Number(valor) !== real[chave]) erros.push(`${pagina}: diz ${valor} para "${chave}", e são ${real[chave]}`)
+        }
+        const listadas = [...html.matchAll(/^\s*\['([a-z][\w-]*)',\s*'/gm)].map(m => m[1])
+        if (listadas.length) {
+          const ids = RULES.map(r => r.id)
+          for (const id of ids.filter(i => !listadas.includes(i))) erros.push(`${pagina}: a tabela de regras não traz ${id}`)
+          for (const id of listadas.filter(i => !ids.includes(i))) erros.push(`${pagina}: a tabela de regras traz ${id}, que não existe no check`)
+        }
+        return erros
+      })
+    },
+  },
+  {
+    id: 'rule-proofs',
+    descricao: 'toda regra do motor (scripts/harness/rules) cumpre o contrato, passa na própria prova e tem seção em docs/regras.md',
+    run({ root, catalog = CATALOG }) {
+      const erros = catalogProblems(catalog)
+      const doc = resolve(root, 'docs/regras.md')
+      if (!existsSync(doc)) return [...erros, 'docs/regras.md ausente: a mensagem de bloqueio aponta para ele']
+      const secoes = new Set([...readFileSync(doc, 'utf8').matchAll(/^## (\S+)\s*$/gm)].map(m => m[1]))
+      return [...erros, ...catalog.filter(rule => !secoes.has(rule.id)).map(rule => `regra ${rule.id} sem seção "## ${rule.id}" em docs/regras.md`)]
     },
   },
 ]
@@ -354,9 +421,10 @@ function proseFiles(root, config) {
     .map(file => ({ nome: rel(root, file), texto: readFileSync(file, 'utf8') }))
 }
 
-export function runChecks(root = ROOT, { only } = {}) {
+/** @param catalog só os testes trocam: para ver a `rule-proofs` falhar com uma regra quebrada */
+export function runChecks(root = ROOT, { only, catalog } = {}) {
   const config = loadConfig(root)
-  const ctx = { root, config, files: repoFiles(root), prose: proseFiles(root, config) }
+  const ctx = { root, config, files: repoFiles(root), prose: proseFiles(root, config), ...(catalog ? { catalog } : {}) }
   const desligadas = new Set(config.checks?.disabled ?? [])
   const resultado = []
   for (const rule of RULES) {

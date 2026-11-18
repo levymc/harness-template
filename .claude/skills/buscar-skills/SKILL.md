@@ -1,6 +1,6 @@
 ---
 name: buscar-skills
-description: Procura na internet skills de terceiros que sirvam à stack e ao domínio do projeto, revisa cada candidata como código não confiável e instala só as aprovadas pelo usuário, fixadas por SHA no skills-lock.json. Use ao iniciar um projeto, ao adotar o harness num repositório existente, quando a stack mudar, quando o usuário pedir skills para uma tecnologia, ou quando ele descrever um objetivo ou fluxo e pedir skills que ajudem nele ("procure skills que me ajudem em ...") — nesse caso entrega um estudo por capacidade, com ranking e lacunas.
+description: 'Procura skills de terceiros para a stack e o domínio do projeto, revisa cada uma como código não confiável e instala só as aprovadas, fixadas por SHA. Use quando iniciar ou adotar um projeto, a stack mudar, ou o usuário pedir skills para uma tecnologia ou um objetivo.'
 ---
 
 # Buscar skills de terceiros

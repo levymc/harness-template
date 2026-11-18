@@ -7,6 +7,9 @@ coverage/
 !.env.example
 # uso do harness (skills/agentes chamados) — local, alimenta a jardinagem
 .harness/
+# mutação (Stryker): backup em andamento e relatório
+.stryker-tmp/
+reports/mutation/
 # configurações pessoais do Claude Code
 .claude/settings.local.json
 # workspaces de eval da skill-creator: podem embutir qualquer arquivo de saída

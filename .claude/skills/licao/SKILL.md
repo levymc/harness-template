@@ -1,6 +1,6 @@
 ---
 name: licao
-description: Transforma uma falha, um bug ou um "verde que mentia" em guarda permanente, subindo a escada teste → regra de check/hook → linha de skill → fato de memória, e prova que a guarda pega. Use depois de corrigir um bug que poderia voltar, quando um teste passou pelo motivo errado, quando uma instrução escrita no repo estava errada, ou quando o usuário corrigir o mesmo erro duas vezes.
+description: 'Transforma uma falha ou um "verde que mentia" em guarda permanente, pela escada teste → regra → skill → memória, e prova que ela pega. Use quando corrigir um bug que pode voltar, um teste passar pelo motivo errado, uma instrução do repo estiver errada ou o mesmo erro se repetir.'
 ---
 
 # Lição → guarda

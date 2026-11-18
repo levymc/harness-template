@@ -9,8 +9,8 @@ A pasta da tarefa é memória **episódica**: serve enquanto o trabalho está vi
 para sempre foi o que gerou, num dos projetos de origem, 634 pastas que ninguém relia.
 O histórico fica no git; o que vale a pena lembrar sobe para um lugar durável.
 
-1. **Critérios.** Todo `"passa": true` tem evidência citada no PROGRESS? Se algum não
-   passa, diga ao usuário — fechar com critério aberto é decisão dele, e o motivo vai
+1. **Critérios.** Todo `"passa": true` tem a linha `evidência (critério N): …` no PROGRESS
+   (a regra `work-tasks` do check confere)? Se algum não passa, diga ao usuário — fechar com critério aberto é decisão dele, e o motivo vai
    para o PROGRESS antes de apagar.
 2. **Destile.** Releia o PROGRESS e pergunte, para cada achado:
    - Uma checagem teria evitado isto? → skill `licao` (teste → check/hook → skill).
@@ -18,9 +18,14 @@ O histórico fica no git; o que vale a pena lembrar sobe para um lugar durável.
    - É um fato não óbvio e durável sobre o código? → skill `memoria`.
    - Nenhum dos três? Então não registre. Registrar tudo é o mesmo que não registrar
      nada — e diga isso explicitamente no resumo.
-3. **Verifique.** Os passos da skill `pre-push` verdes (ou diga o que ficou vermelho, o
-   que não rodou, e por quê).
-4. **Apague** a pasta `work/<slug>/` no mesmo commit que fecha o trabalho, com a
+3. **Verifique** pela skill `validar-antes-de-concluir`: gate inteiro na mesma rodada,
+   comportamento exercitado, diff relido, revisão fria sem achado que bloqueia (ou diga o
+   que ficou vermelho, o que não rodou, e por quê).
+4. **Audite a sessão:** `node scripts/harness/conferir-sessao.mjs`. Cada falta ao ritual
+   (tarefa aberta tarde, push sem validar, `passa:true` sem evidência, resumo sem o que não
+   foi verificado) mostra onde o harness não segurou o agente: relate pela skill
+   `relatar-atrito`, com o OK do usuário. A falta do resumo é esperada antes do resumo final.
+5. **Apague** a pasta `work/<slug>/` no mesmo commit que fecha o trabalho, com a
    mensagem citando o que foi destilado e para onde.
-5. **Resumo ao usuário:** o que foi feito, o que foi verificado, **o que não foi
+6. **Resumo ao usuário:** o que foi feito, o que foi verificado, **o que não foi
    verificado**, e o que foi destilado para onde.

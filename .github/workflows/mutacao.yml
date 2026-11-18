@@ -1,0 +1,91 @@
+# Mutação do PR: o Stryker muta só as linhas que o PR adiciona, em fatias paralelas, e cada
+# arquivo reprova abaixo do `break` (80%). O job "Mutação do PR" junta as fatias e é o check que
+# a proteção da `main` deve exigir (configuração do dono do repositório). Fica fora do ci.yml
+# porque roda a suíte uma vez por mutante. Planejar e rodar: scripts/harness/mutacao.mjs.
+#
+# O alvo `harness` roda com `inPlace` (troca os fontes em disco): cada fatia tem o próprio
+# checkout, e nenhum outro passo do job lê o código enquanto ele roda.
+name: mutacao
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mutacao-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  planejar:
+    name: Planejar a mutação do PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      matriz: ${{ steps.plano.outputs.matriz }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # o diff contra o merge-base precisa do histórico
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Só a matriz vai ao stdout; o resumo vai ao stderr e fica no log.
+      - name: Fatiar as linhas novas do PR
+        id: plano
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          matriz="$(node scripts/harness/mutacao.mjs planejar --base "origin/$BASE_REF")"
+          echo "matriz=$matriz" >> "$GITHUB_OUTPUT"
+
+  mutar:
+    name: Mutação do PR — fatia ${{ matrix.fatia }} (${{ matrix.alvo }})
+    needs: planejar
+    if: needs.planejar.outputs.matriz != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false # uma fatia vermelha não esconde os sobreviventes das outras
+      matrix:
+        include: ${{ fromJSON(needs.planejar.outputs.matriz) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Mutar a fatia com o break
+        env:
+          ALVO: ${{ matrix.alvo }}
+          ARQUIVOS: ${{ matrix.arquivos }}
+        run: node scripts/harness/mutacao.mjs rodar --alvo "$ALVO" --arquivos "$ARQUIVOS"
+      - name: Publicar o relatório de mutação (HTML)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutacao-fatia-${{ matrix.fatia }}
+          path: reports/mutation/
+          if-no-files-found: ignore
+
+  # Nome fixo: é o check que a proteção da `main` exige. Roda sempre, para plano ou fatia
+  # vermelha aparecerem como falha e não como check pulado.
+  resultado:
+    name: Mutação do PR
+    needs: [planejar, mutar]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Conferir o plano e as fatias
+        env:
+          PLANO: ${{ needs.planejar.result }}
+          FATIAS: ${{ needs.mutar.result }}
+        run: |
+          echo "Plano: $PLANO; fatias: $FATIAS."
+          if [ "$PLANO" != "success" ]; then echo "O plano da mutação não passou."; exit 1; fi
+          if [ "$FATIAS" != "success" ] && [ "$FATIAS" != "skipped" ]; then echo "Alguma fatia não passou; veja os sobreviventes nos jobs da matriz."; exit 1; fi
