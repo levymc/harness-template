@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "$comentario": "Mutação do produto (src/, Vitest). O runner do Vitest mede que teste cobre cada mutante (perTest) e roda só esses. O mutate de cada fatia é trocado por scripts/harness/mutacao.mjs pelas linhas novas do PR.",
+  "testRunner": "vitest",
+  "plugins": ["@stryker-mutator/vitest-runner"],
+  "vitest": { "configFile": "vitest.config.ts" },
+  "coverageAnalysis": "perTest",
+  "mutate": [
+    "src/**/*.ts",
+    "!src/**/*.spec.ts",
+    "!src/**/*.e2e-spec.ts",
+    "!src/main.ts"
+  ],
+  "reporters": ["clear-text", "html", "json", "progress"],
+  "thresholds": { "high": 90, "low": 80, "break": 80 },
+  "timeoutMS": 20000,
+  "timeoutFactor": 1.5
+}

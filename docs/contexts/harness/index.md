@@ -19,6 +19,9 @@ guardas, a memória e as lições que viram checagem. O porquê de cada peça es
 - `scripts/harness/falhas.mjs`, `revisao-fria.mjs`, `recorte.mjs`: as peças da validação antes
   do "pronto" e da cobertura de lacunas.
 - `scripts/harness/suite.mjs` e `teto-de-memoria.mjs`: a suíte com Temp limpa e teto de RAM.
+- `mutacao.mjs` (em scripts/harness), `stryker.config.json` (harness) e
+  `stryker.produto.config.json` (src/, Vitest): a mutação do PR. Só do template: depende do
+  Stryker e não viaja na adoção.
 - `scripts/harness/adopt.mjs` e `scripts/harness/templates/`: a adoção em outro repo.
 - `scripts/harness/test/`: a suíte do próprio harness, com fixture de repositório.
 - `harness.config.json`: tetos, termos proibidos e o manifesto da camada.

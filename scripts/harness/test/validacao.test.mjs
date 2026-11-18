@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict'
 import { existsSync } from 'node:fs'
 import { after, describe, it } from 'node:test'
-import { decidir, normalizar, rascunhoDoBloqueio, registrar } from '../falhas.mjs'
+import { decidir, mesmaFalha, normalizar, rascunhoDoBloqueio, registrar } from '../falhas.mjs'
 import { recorte } from '../recorte.mjs'
 import { gerarPedido, lenteDoPr, lerAchados, LIMITE_DA_SAIDA, montarPedido, cortarSaida, NADA } from '../revisao-fria.mjs'
 import { cleanup, git, makeRepo, read, run, write } from './fixture.mjs'
@@ -36,6 +36,45 @@ describe('falhas', () => {
   })
   it('normaliza endereço de memória e espaço', () => {
     assert.equal(normalizar('em 0xdeadbeef   agora'), 'em <endereço> agora')
+  })
+  // Saída exata, padrão por padrão: a mutação mostrou que "a mesma falha com hora diferente"
+  // não distinguia uma regex trocada de uma certa.
+  it('normaliza cada forma de hora, duração e endereço, por inteiro', () => {
+    assert.equal(normalizar('a 2026-01-02T10:11:12.345+03:00 b'), 'a <hora> b')
+    assert.equal(normalizar('a 2026-01-02 10:11:12Z b'), 'a <hora> b')
+    assert.equal(normalizar('a 10:11:12,5 b'), 'a <hora> b')
+    assert.equal(normalizar('levou 1.5s e 200 ms e 3,25 s'), 'levou <duração> e <duração> e <duração>')
+    assert.equal(normalizar('em 0xABC1'), 'em <endereço>')
+    assert.equal(normalizar('  linha\n\tquebrada  '), 'linha quebrada')
+    assert.equal(normalizar(undefined), '')
+    assert.equal(normalizar('versão 12 de 2026'), 'versão 12 de 2026')
+  })
+  it('mesma falha exige os dois falhou, o mesmo teste (sem contar espaço) e a mesma mensagem', () => {
+    const a = { resultado: 'falhou', teste: ' build ', mensagem: 'x', tentativa: 't' }
+    assert.equal(mesmaFalha(a, { ...a, teste: 'build' }), true)
+    assert.equal(mesmaFalha(a, { ...a, teste: 'lint' }), false)
+    assert.equal(mesmaFalha(a, { ...a, mensagem: 'y' }), false)
+    assert.equal(mesmaFalha(a, { resultado: 'passou' }), false)
+    assert.equal(mesmaFalha({ resultado: 'passou' }, a), false)
+    assert.equal(mesmaFalha(undefined, a), false)
+  })
+  it('registrar guarda o evento aparado e recusa cada campo vazio com a mensagem dele', () => {
+    assert.deepEqual(registrar([], { resultado: 'passou', teste: 'ignorado' }), [{ resultado: 'passou' }])
+    assert.deepEqual(registrar([{ resultado: 'passou' }], falha('  m  ', '  t  ')), [{ resultado: 'passou' }, { resultado: 'falhou', teste: 'build', mensagem: 'm', tentativa: 't' }])
+    assert.throws(() => registrar([], { ...falha('m'), teste: '   ' }), /falta --teste/)
+    assert.throws(() => registrar([], { ...falha('m'), mensagem: '' }), /falta --mensagem/)
+    assert.throws(() => registrar([], { ...falha('m'), resultado: 'quebrou' }), /resultado desconhecido: "quebrou"/)
+  })
+  it('decidir: sem falha no fim não para; conta só a sequência do fim e devolve só ela', () => {
+    assert.deepEqual(decidir([]), { parar: false, repeticoes: 0 })
+    assert.deepEqual(decidir([falha('a'), { resultado: 'passou' }].reduce(registrar, [])), { parar: false, repeticoes: 0 })
+    const h = [falha('b', 'antes'), falha('a', 'um'), falha('a', 'dois'), falha('a', 'três')].reduce(registrar, [])
+    const d = decidir(h)
+    assert.equal(d.repeticoes, 3)
+    assert.equal(d.parar, true)
+    assert.deepEqual(d.tentativas.map(t => t.tentativa), ['um', 'dois', 'três'])
+    assert.equal(d.falha.tentativa, 'três')
+    assert.equal(decidir([falha('a')].reduce(registrar, [])).repeticoes, 1)
   })
   it('pela linha de comando: sai 3 na segunda falha igual e grava o rascunho do bloqueio', () => {
     const root = repo()

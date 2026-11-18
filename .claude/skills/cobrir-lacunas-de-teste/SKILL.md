@@ -56,6 +56,15 @@ novo, agora pega, é o critério de pronto.
    quando alguma sobrevive (a lacuna), 2 quando não deu para sabotar. Enquanto ele roda, não
    rode o gate nem a revisão fria no mesmo worktree: os dois leriam o código sabotado. Corrida
    cortada é desfeita na chamada seguinte (`.harness/prova-pendente.json`).
+
+   Se o repositório tem a mutação do PR configurada (no template, o script `mutation` do
+   package.json e o workflow de mutação do CI), ela faz o mesmo em escala, só nas linhas
+   novas da branch. Rode antes do push com os modos `planejar --base origin/main` (mostra as
+   fatias) e `rodar --alvo <harness|produto> --arquivos "<fatia>"` (roda uma). Cada
+   sobrevivente pede, nesta ordem: um teste que o mate; simplificar o código; só então
+   `// Stryker disable next-line <operador>: <motivo>` — sem motivo, o `planejar` recusa.
+   O alvo `harness` muta os arquivos no lugar — inclusive os hooks que esta sessão usa: rode-o
+   em primeiro plano e não rode outro comando até ele terminar e devolver os originais.
 3. **Desenhe o teste de cada lacuna:** o nível, a invariante que a sabotagem sobrevivente
    mostra, a fixture com os valores em disputa diferentes.
 4. **Escreva os testes.**

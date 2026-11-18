@@ -21,3 +21,13 @@
 - achado: a regra `script-flag` pegou os dois scripts novos (flag montado por concatenação não aparece literal) — consertado nos scripts, não na regra.
 - evidência (critério 2): `pnpm check` exit 0 — harness:test 164/164 pela suite.mjs, sem sobra na Temp; `✓ 19 regras conferidas`. `prove.mjs --lista` com 7 sabotagens (verificação verde antes, evidência do work-tasks, "Use quando", teto 280, sobras da suíte, exclusão de work/ do diff, limite do falhas) → as 7 PEGAS.
 - próximo passo: fatia 3 (mutação no CI).
+
+### 2026-11-18 — fatia 3: mutação no CI
+- feito: `@stryker-mutator/core` e `vitest-runner` 10.1.1 (devDependencies, versão fixa); `stryker.config.json` (harness, command runner) e `stryker.produto.config.json` (src/, Vitest, perTest); `scripts/harness/mutacao.mjs` (planejar/rodar, fatias por alvo, break por arquivo, recusa Stryker desligado sem motivo e corrida cortada); `.github/workflows/mutacao.yml` (check "Mutação do PR"); script `pnpm mutation`.
+- decisão: o grafo de testes segue import TRANSITIVO (a referência só segue o direto): as regras do motor são testadas pelo catálogo que as importa e ficariam "sem teste".
+- decisão: a mutação é do template, não viaja na adoção (depende do Stryker/pnpm) — `layerExclude`.
+- achado: pnpm esconde o vitest-runner do core; `plugins` explícito no config resolve.
+- achado: rodada real em `falhas.mjs` deu 58,5% (61 vivos) com os testes da fatia 2 — testes novos com saída exata levaram a fatia acima do break (exit 0). Mostra que esta própria entrega tem lacunas que a mutação do CI vai cobrar nas outras 32 fatias deste PR.
+- achado (fora do escopo): `src/items/items.service.ts` tem 33% — o esqueleto cobre o serviço só pelo e2e, que a mutação não roda.
+- evidência (critério 3): `pnpm check` exit 0 (harness:test 177/177); `mutacao.mjs planejar --base origin/main` gerou 33 fatias; `rodar --alvo harness` em falhas.mjs: 58,50% → exit 1, depois dos testes → exit 0; `rodar --alvo produto` em items.service.ts rodou com o Vitest (33,33%, exit 1 pelo break). O workflow só roda no GitHub: NÃO verificado.
+- próximo passo: fatia 4 (loop de atrito e auditoria da sessão).

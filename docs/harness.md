@@ -32,6 +32,7 @@ que descrevia um código que já tinha mudado. Daí três princípios:
 | `scripts/harness/adopt.mjs` | leva a camada de harness a um repositório existente |
 | `scripts/harness/prove.mjs` | aplica uma regressão de propósito (ou uma lista), confere que a verificação estava verde antes, roda e reverte: "prove que pega" executável |
 | `scripts/harness/falhas.mjs` · `revisao-fria.mjs` · `recorte.mjs` | o laço que para na segunda falha igual, o pedido da revisão fria, o recorte da entrega (skills `validar-antes-de-concluir` e `cobrir-lacunas-de-teste`) |
+| `mutacao.mjs` (em scripts/harness) · `stryker*.config.json` | mutação só nas linhas novas do PR, em fatias, reprovando arquivo abaixo de 80% (workflow `mutacao` do CI; só do template, não viaja na adoção) |
 | `scripts/harness/suite.mjs` | roda a suíte do harness com a Temp numa pasta vazia (sobra reprova) e teto de RAM |
 | `scripts/harness/test/` | o harness testado como código, nos dois sentidos |
 | `docs/guardrails.md` | toda proibição, com sensor, origem e condição de expiração |

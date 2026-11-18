@@ -36,5 +36,7 @@ vira peso morto que ninguém ousa remover.
 | Terceira tentativa com a mesma hipótese depois de duas falhas iguais | gasta tempo e empurra o agente a afrouxar o teste | `scripts/harness/falhas.mjs` | harness de referência | se a skill validar-antes-de-concluir sair do harness |
 | Concluir sem revisão de quem não escreveu a mudança | quem escreveu defende o próprio diff | revisão | harness de referência | nunca |
 | Description de skill acima de 280 caracteres ou sem "Use quando" | entra no contexto de toda sessão; sem gatilho, a skill não dispara na hora certa | `check-claims:skill-frontmatter` | harness de referência | se o Claude Code deixar de carregar as descriptions em toda sessão |
+| Linha nova de código que nenhum teste verifica (mutante sobrevive) | cobertura de linha não prova verificação; o teste que roda e não confere passa em tudo | `.github/workflows/mutacao.yml` | harness de referência | se o custo da mutação passar do valor (rever o break) |
+| Desligar o Stryker sem motivo escrito | o mutante vivo some do relatório sem ninguém decidir | `scripts/harness/mutacao.mjs` | harness de referência | nunca |
 | Suíte do harness que deixa sobra na Temp | a mutação e o prove.mjs rodam a suíte a cada troca e enchem a máquina | `scripts/harness/suite.mjs` | harness de referência (223 mil itens na Temp) | nunca |
 | Contornar um bloqueio de hook por outro caminho | anula a guarda e esconde o motivo | revisão | — | nunca |
